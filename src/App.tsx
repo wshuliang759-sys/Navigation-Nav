@@ -1,0 +1,359 @@
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import * as LucideIcons from "lucide-react";
+
+import { presetTools, categories } from "./data/presetTools";
+import { Tool, UserCustomTool } from "./types";
+
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
+import ToolCard from "./components/ToolCard";
+import AddToolModal from "./components/AddToolModal";
+import BuiltInTools from "./components/BuiltInTools";
+
+export default function App() {
+  // State 1: Custom User Tools (persisted in localStorage)
+  const [customTools, setCustomTools] = useState<Tool[]>(() => {
+    try {
+      const stored = localStorage.getItem("user_custom_tools");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // State 2: Favorites (list of tool IDs, persisted in localStorage)
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem("user_favorite_tools");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // State 3: Click tracking statistics
+  const [clicks, setClicks] = useState<Record<string, number>>(() => {
+    try {
+      const stored = localStorage.getItem("user_tool_clicks");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  // UI state
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [activeBuiltInKey, setActiveBuiltInKey] = useState<string | null>(null);
+
+  // Sync custom tools to localStorage
+  useEffect(() => {
+    localStorage.setItem("user_custom_tools", JSON.stringify(customTools));
+  }, [customTools]);
+
+  // Sync favorites to localStorage
+  useEffect(() => {
+    localStorage.setItem("user_favorite_tools", JSON.stringify(favorites));
+  }, [favorites]);
+
+  // Sync clicks to localStorage
+  useEffect(() => {
+    localStorage.setItem("user_tool_clicks", JSON.stringify(clicks));
+  }, [clicks]);
+
+  // Handle adding custom tool
+  const handleAddTool = (newTool: UserCustomTool) => {
+    const customToolItem: Tool = {
+      id: `custom-${Date.now()}`,
+      name: newTool.name,
+      url: newTool.url,
+      category: newTool.category,
+      description: newTool.description || "用户自行添加的工具链接。",
+      tags: newTool.tags
+        ? newTool.tags
+            .split(/[,，]/)
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : ["自定义"],
+      icon: newTool.icon || "Globe",
+      isCustom: true,
+      clicks: 0,
+    };
+
+    setCustomTools((prev) => [customToolItem, ...prev]);
+  };
+
+  // Toggle Favorite
+  const handleToggleFavorite = (id: string) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Click statistics recorder
+  const handleIncrementClicks = (id: string) => {
+    setClicks((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1,
+    }));
+  };
+
+  // Combine and map click counters to the tools database
+  const allTools: Tool[] = [...presetTools, ...customTools].map((t) => ({
+    ...t,
+    clicks: clicks[t.id] || 0,
+  }));
+
+  // Helper: compute counts dynamically
+  const getCategoryCount = (catId: string) => {
+    if (catId === "all") {
+      return allTools.length;
+    }
+    if (catId === "favorites") {
+      return favorites.length;
+    }
+    return allTools.filter((t) => t.category === catId).length;
+  };
+
+  // Core Filtering Pipeline
+  const filteredTools = allTools.filter((tool) => {
+    // 1. Filter by Category
+    if (activeCategory === "favorites") {
+      if (!favorites.includes(tool.id)) return false;
+    } else if (activeCategory !== "all") {
+      if (tool.category !== activeCategory) return false;
+    }
+
+    // 2. Filter by Tag
+    if (selectedTag && !tool.tags.includes(selectedTag)) {
+      return false;
+    }
+
+    // 3. Filter by Search Query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const matchName = tool.name.toLowerCase().includes(q);
+      const matchDesc = tool.description.toLowerCase().includes(q);
+      const matchTags = tool.tags.some((t) => t.toLowerCase().includes(q));
+      return matchName || matchDesc || matchTags;
+    }
+
+    return true;
+  });
+
+  // Sort tools: highest clicks or alphabetical
+  const sortedTools = [...filteredTools].sort((a, b) => {
+    // Put built-ins first in their category
+    if (a.isBuiltIn && !b.isBuiltIn) return -1;
+    if (!a.isBuiltIn && b.isBuiltIn) return 1;
+
+    // Then sort by clicks descending
+    return (b.clicks || 0) - (a.clicks || 0);
+  });
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      {/* Bento Layout Wrapper */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
+        {/* Dynamic Header */}
+        <Header
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onOpenAddModal={() => setIsAddModalOpen(true)}
+          onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+          totalCount={allTools.length}
+          favoritesCount={favorites.length}
+          customCount={customTools.length}
+          selectedTag={selectedTag}
+          setSelectedTag={setSelectedTag}
+        />
+
+        {/* Main Workspace Layout */}
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 relative items-start">
+          {/* Sticky/Collapsible Left Sidebar */}
+          <Sidebar
+            categories={categories}
+            activeCategory={activeCategory}
+            setActiveCategory={(catId) => {
+              setActiveCategory(catId);
+              setSelectedTag(""); // Clear active tag when category changes
+              setActiveBuiltInKey(null); // Return to default list when category changes
+            }}
+            getCategoryCount={getCategoryCount}
+            isOpen={isSidebarOpen}
+            setIsOpen={setIsSidebarOpen}
+          />
+
+          {/* Right main grid viewport */}
+          <main className="flex-1 w-full overflow-x-hidden space-y-6">
+            <AnimatePresence mode="wait">
+              {/* 1. Show Takeover Workspace if a built-in micro-tool is active */}
+              {activeBuiltInKey ? (
+                <motion.div
+                  key="builtin-workspace"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <BuiltInTools
+                    toolKey={activeBuiltInKey}
+                    onClose={() => setActiveBuiltInKey(null)}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="navigation-workspace"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-6"
+                >
+                  {/* Active Filter Indicators */}
+                  {(selectedTag || searchQuery) && (
+                    <div className="flex flex-wrap items-center gap-3 p-4 bg-indigo-50/50 border border-indigo-100/50 rounded-2xl animate-fade-in">
+                      <div className="flex items-center gap-2 text-xs font-extrabold text-indigo-900">
+                        <LucideIcons.Filter className="w-4 h-4 text-indigo-600" />
+                        <span>正在应用过滤检索:</span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        {selectedTag && (
+                          <span className="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100">
+                            标签: #{selectedTag}
+                            <button
+                              onClick={() => setSelectedTag("")}
+                              className="hover:bg-indigo-700 p-0.5 rounded-full cursor-pointer transition-colors"
+                              title="清除标签"
+                            >
+                              <LucideIcons.X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        )}
+
+                        {searchQuery && (
+                          <span className="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100">
+                            搜索: "{searchQuery}"
+                            <button
+                              onClick={() => setSearchQuery("")}
+                              className="hover:bg-indigo-700 p-0.5 rounded-full cursor-pointer transition-colors"
+                              title="清除搜索"
+                            >
+                              <LucideIcons.X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        )}
+
+                        {(selectedTag || searchQuery) && (
+                          <button
+                            onClick={() => {
+                              setSelectedTag("");
+                              setSearchQuery("");
+                            }}
+                            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline ml-2 cursor-pointer transition-colors"
+                          >
+                            重置所有
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dashboard Category Description Banner */}
+                  <div className="p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-3xl text-white shadow-md shadow-indigo-100/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <h2 className="text-base font-bold flex items-center gap-2">
+                        {activeCategory === "all" && "✨ 发现优秀的 Web 工具与工作台"}
+                        {activeCategory === "favorites" && "⭐ 个人常用工具箱"}
+                        {activeCategory === "utility" && "🧳 本地免网口袋微工具"}
+                        {activeCategory === "ai" && "🤖 前沿 AI 大模型与智能创作生态"}
+                        {activeCategory === "dev" && "💻 开发者高并发效能实用目录"}
+                        {activeCategory === "design" && "🎨 视觉设计师视觉灵感与资源库"}
+                        {activeCategory === "productivity" && "📝 效率团队智能协同及学术工具"}
+                        {activeCategory === "other" && "🔍 实用网络工具与便民测试工具"}
+                      </h2>
+                      <p className="text-xs text-indigo-200/80">
+                        {categories.find((c) => c.id === activeCategory)?.description}
+                      </p>
+                    </div>
+                    <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-[10px] font-bold font-mono tracking-wider text-indigo-200">
+                      当前列表: {sortedTools.length} 项已过滤
+                    </span>
+                  </div>
+
+                  {/* Grid View */}
+                  {sortedTools.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {sortedTools.map((tool) => (
+                        <div key={tool.id} className="h-full">
+                          <ToolCard
+                            tool={tool}
+                            isFavorited={favorites.includes(tool.id)}
+                            onToggleFavorite={handleToggleFavorite}
+                            onTagClick={(tag) => setSelectedTag(tag)}
+                            onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
+                            incrementClicks={handleIncrementClicks}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-20 bg-white border border-slate-200/60 rounded-3xl p-6 flex flex-col items-center justify-center max-w-lg mx-auto shadow-sm">
+                      <div className="p-4 bg-slate-50 text-slate-400 rounded-full mb-4">
+                        <LucideIcons.SearchSlash className="w-10 h-10 text-slate-300" />
+                      </div>
+                      <h3 className="font-extrabold text-slate-800 text-lg">没有找到匹配的工具</h3>
+                      <p className="text-sm text-slate-400 mt-2 leading-relaxed font-medium">
+                        {activeCategory === "favorites"
+                          ? "您还没有收藏过任何工具！点击任意工具卡片右上角的星标即可收藏在此。"
+                          : "请尝试更改搜索词，或切换不同的分类查看。您也可以点击右上角添加自己的常用网站。"}
+                      </p>
+                      {activeCategory === "favorites" ? (
+                        <button
+                          onClick={() => setActiveCategory("all")}
+                          className="mt-6 px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
+                        >
+                          浏览全部工具
+                        </button>
+                      ) : (
+                        <div className="flex gap-3 mt-6">
+                          <button
+                            onClick={() => {
+                              setSearchQuery("");
+                              setSelectedTag("");
+                            }}
+                            className="px-4 py-2.5 text-xs font-bold border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                          >
+                            清除当前过滤
+                          </button>
+                          <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
+                          >
+                            收录新网站
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </main>
+        </div>
+      </div>
+
+      {/* Slide-over submission modal */}
+      <AddToolModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        categories={categories}
+        onAddTool={handleAddTool}
+      />
+    </div>
+  );
+}

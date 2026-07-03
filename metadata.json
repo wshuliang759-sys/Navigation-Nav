@@ -1,0 +1,6 @@
+{
+  "name": "工具导航",
+  "description": "一个极简、现代、功能强大的工具导航网站与开发者工具箱，支持工具分类检索、书签收藏、自定义添加工具以及内置常用微型开发者工具。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
