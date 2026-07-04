@@ -1,6 +1,6 @@
 {
-  "name": "DevTools Navigator",
-  "description": "An elegant, modern, and powerful developer toolbox and tool navigator. Supports categorized search, bookmarking, custom additions, and fully offline built-in developer micro-utilities.",
+  "name": "资源中心",
+  "description": "一个极其现代、功能强大的工具与资源中心，内置各种离线式微型开发者工具、分类导航、和多语言检索支持。",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

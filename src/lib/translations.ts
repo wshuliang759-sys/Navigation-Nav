@@ -115,7 +115,7 @@ export const languagesList: { code: Language; name: string; flag: string }[] = [
 
 export const translations: Record<Language, TranslationDict> = {
   en: {
-    brandTitle: "DevTools Hub",
+    brandTitle: "Resource Center",
     brandSubtitle: "Minimalist, offline-first digital sandbox & tech directory",
     searchPlaceholder: "Search by name, tags, description...",
     totalTools: "Total Tools",
@@ -176,7 +176,7 @@ export const translations: Record<Language, TranslationDict> = {
     clickCount: "clicks",
   },
   zh_cn: {
-    brandTitle: "开发工具导航箱",
+    brandTitle: "资源中心",
     brandSubtitle: "极简、开箱即用的离线数字化沙盒及全球技术导航",
     searchPlaceholder: "输入名称、描述、拼音或标签进行检索...",
     totalTools: "工具总数",
@@ -237,7 +237,7 @@ export const translations: Record<Language, TranslationDict> = {
     clickCount: "次点击",
   },
   zh_tw: {
-    brandTitle: "開發工具導航箱",
+    brandTitle: "資源中心",
     brandSubtitle: "極簡、開箱即用的離線數位化沙盒及全球技術導航",
     searchPlaceholder: "輸入名稱、描述、拼音或標籤進行檢索...",
     totalTools: "工具總數",

@@ -214,7 +214,7 @@ export default function Sidebar({
 
           <div className="text-center">
             <p className="text-[10px] text-slate-400 font-medium">
-              © 2026 DevTools. Powered by React 19
+              © 2026 {t.brandTitle}. Powered by React 19
             </p>
             <p className="text-[9px] text-slate-300 mt-0.5 font-mono">
               All data stored locally in your browser.

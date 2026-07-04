@@ -1,39 +1,32 @@
 import { useEffect, useRef, useId } from "react";
 import * as LucideIcons from "lucide-react";
 import { Language, languagesList, TranslationDict } from "../lib/translations";
+import logoImg from "../assets/images/logo_tf_1783140903194.jpg";
 
 interface HeaderProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  onOpenAddModal: () => void;
   onToggleSidebar: () => void;
   totalCount: number;
   favoritesCount: number;
-  customCount: number;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
   language: Language;
   setLanguage: (lang: Language) => void;
   t: TranslationDict;
-  isAdmin: boolean;
-  onLogoutAdmin: () => void;
 }
 
 export default function Header({
   searchQuery,
   setSearchQuery,
-  onOpenAddModal,
   onToggleSidebar,
   totalCount,
   favoritesCount,
-  customCount,
   selectedTag,
   setSelectedTag,
   language,
   setLanguage,
   t,
-  isAdmin,
-  onLogoutAdmin,
 }: HeaderProps) {
   // Common icons
   const Search = LucideIcons.Search;
@@ -76,8 +69,13 @@ export default function Header({
             </button>
 
             <div className="flex items-center gap-2.5">
-              <div className="bg-gradient-to-br from-indigo-500 to-violet-600 text-white p-2.5 rounded-2xl shadow-md shadow-indigo-100 flex items-center justify-center">
-                <Pocket className="w-5.5 h-5.5" />
+              <div className="w-10 h-10 rounded-2xl overflow-hidden flex items-center justify-center shadow-md shadow-indigo-100/30 border border-slate-100">
+                <img
+                  src={logoImg}
+                  alt="Logo"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <div>
                 <h1 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-1.5">
@@ -88,7 +86,7 @@ export default function Header({
             </div>
           </div>
 
-          {/* Mobile Right: Language and Admin Actions */}
+          {/* Mobile Right: Language */}
           <div className="flex lg:hidden items-center gap-2">
             {/* Native Select picker */}
             <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/60 px-2 py-1.5 rounded-xl text-slate-700">
@@ -105,16 +103,6 @@ export default function Header({
                 ))}
               </select>
             </div>
-
-            <button
-              onClick={onOpenAddModal}
-              className={`p-2.5 rounded-xl transition-all shadow-sm cursor-pointer ${
-                isAdmin ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"
-              }`}
-              title={t.submitTool}
-            >
-              {isAdmin ? <ShieldCheck className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-            </button>
           </div>
         </div>
 
@@ -165,11 +153,6 @@ export default function Header({
               <span className="text-amber-500 font-extrabold font-mono text-xs leading-none">{favoritesCount}</span>
               <span className="text-[8px] text-slate-400 font-semibold mt-0.5">{t.myFavorites}</span>
             </div>
-            <div className="h-5 w-px bg-slate-250" />
-            <div className="flex flex-col items-center px-1">
-              <span className="text-indigo-600 font-extrabold font-mono text-xs leading-none">{customCount}</span>
-              <span className="text-[8px] text-slate-400 font-semibold mt-0.5">{t.customAdded}</span>
-            </div>
           </div>
 
           {/* Languages selection dropdown */}
@@ -186,31 +169,6 @@ export default function Header({
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Submit tool button */}
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={onOpenAddModal}
-              className={`px-4 py-2.5 text-xs font-bold rounded-2xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer hover:shadow-lg active:scale-95 ${
-                isAdmin
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-100 hover:shadow-emerald-200"
-                  : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-100 hover:shadow-indigo-200"
-              }`}
-            >
-              {isAdmin ? <ShieldCheck className="w-4 h-4" /> : <Shield className="w-4 h-4 text-indigo-200" />}
-              {t.submitTool}
-            </button>
-
-            {isAdmin && (
-              <button
-                onClick={onLogoutAdmin}
-                className="p-2.5 text-slate-400 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 border border-slate-200 rounded-2xl transition-all cursor-pointer"
-                title="退出管理员会话 / Log Out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            )}
           </div>
         </div>
       </div>

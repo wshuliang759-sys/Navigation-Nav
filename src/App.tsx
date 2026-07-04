@@ -11,7 +11,6 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import ToolCard from "./components/ToolCard";
 import ToolTable from "./components/ToolTable";
-import AddToolModal from "./components/AddToolModal";
 import BuiltInTools from "./components/BuiltInTools";
 
 export default function App() {
@@ -22,26 +21,6 @@ export default function App() {
       return (stored as Language) || "en";
     } catch {
       return "en";
-    }
-  });
-
-  // State: Admin authorization (for restricting "add tools" functionality)
-  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    try {
-      const stored = localStorage.getItem("admin_session");
-      return stored === "active";
-    } catch {
-      return false;
-    }
-  });
-
-  // State 1: Custom User Tools (persisted in localStorage)
-  const [customTools, setCustomTools] = useState<Tool[]>(() => {
-    try {
-      const stored = localStorage.getItem("user_custom_tools");
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
     }
   });
 
@@ -70,7 +49,6 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeBuiltInKey, setActiveBuiltInKey] = useState<string | null>(null);
 
   // View mode state ('table' or 'grid'), default to 'table' (high density data mode)
@@ -96,11 +74,6 @@ export default function App() {
     localStorage.setItem("user_lang", language);
   }, [language]);
 
-  // Sync custom tools to localStorage
-  useEffect(() => {
-    localStorage.setItem("user_custom_tools", JSON.stringify(customTools));
-  }, [customTools]);
-
   // Sync favorites to localStorage
   useEffect(() => {
     localStorage.setItem("user_favorite_tools", JSON.stringify(favorites));
@@ -111,38 +84,8 @@ export default function App() {
     localStorage.setItem("user_tool_clicks", JSON.stringify(clicks));
   }, [clicks]);
 
-  // Admin Logout action
-  const handleLogoutAdmin = () => {
-    setIsAdmin(false);
-    try {
-      localStorage.removeItem("admin_session");
-    } catch (e) {}
-  };
-
   // Get active translation dictionary
   const t = translations[language] || translations["en"];
-
-  // Handle adding custom tool
-  const handleAddTool = (newTool: UserCustomTool) => {
-    const customToolItem: Tool = {
-      id: `custom-${Date.now()}`,
-      name: newTool.name,
-      url: newTool.url,
-      category: newTool.category,
-      description: newTool.description || "用户自行添加的工具链接。",
-      tags: newTool.tags
-        ? newTool.tags
-            .split(/[,，]/)
-            .map((t) => t.trim())
-            .filter(Boolean)
-        : ["自定义"],
-      icon: newTool.icon || "Globe",
-      isCustom: true,
-      clicks: 0,
-    };
-
-    setCustomTools((prev) => [customToolItem, ...prev]);
-  };
 
   // Toggle Favorite
   const handleToggleFavorite = (id: string) => {
@@ -160,7 +103,7 @@ export default function App() {
   };
 
   // Combine and map click counters to the tools database, applying localization overrides
-  const allTools: Tool[] = [...presetTools, ...customTools].map((t) => {
+  const allTools: Tool[] = presetTools.map((t) => {
     const isChinese = language === "zh_cn" || language === "zh_tw";
     let localized = { ...t };
     if (!isChinese) {
@@ -295,17 +238,13 @@ export default function App() {
         <Header
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          onOpenAddModal={() => setIsAddModalOpen(true)}
           onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
           totalCount={allTools.length}
           favoritesCount={favorites.length}
-          customCount={customTools.length}
           selectedTag={selectedTag}
           setSelectedTag={setSelectedTag}
           language={language}
           setLanguage={setLanguage}
-          isAdmin={isAdmin}
-          onLogoutAdmin={handleLogoutAdmin}
           t={t}
         />
 
@@ -556,12 +495,6 @@ export default function App() {
                           >
                             {isChinese ? "清除当前过滤" : "Clear Active Filters"}
                           </button>
-                          <button
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
-                          >
-                            {t.submitTool}
-                          </button>
                         </div>
                       )}
                     </div>
@@ -592,16 +525,6 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Slide-over submission modal */}
-      <AddToolModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        categories={categories}
-        onAddTool={handleAddTool}
-        isAdmin={isAdmin}
-        setIsAdmin={setIsAdmin}
-        t={t}
-      />
     </div>
   );
 }
