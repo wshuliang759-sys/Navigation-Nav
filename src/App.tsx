@@ -534,6 +534,25 @@ export default function App() {
         </div>
       </div>
 
+      {/* Global Page Footer */}
+      <footer className="w-full border-t border-slate-200/50 bg-white py-6 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-slate-400 font-medium select-none">
+            © 2026 {t.brandTitle || "DevTools"}. {isChinese ? "保留所有权利。" : "All rights reserved."}
+          </p>
+
+          <a
+            href="https://forms.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700 font-extrabold text-xs rounded-2xl border border-indigo-100/30 hover:border-indigo-200 transition-all cursor-pointer shadow-sm shadow-indigo-100/10 hover:shadow-indigo-150/20"
+          >
+            <LucideIcons.MessageSquare className="w-4 h-4 text-indigo-500" />
+            <span>提交工具或报错机制</span>
+          </a>
+        </div>
+      </footer>
+
       {/* Slide-over submission modal */}
       <AddToolModal
         isOpen={isAddModalOpen}
