@@ -3,10 +3,13 @@ import * as LucideIcons from "lucide-react";
 
 interface BuiltInToolsProps {
   toolKey: string;
+  language?: string;
   onClose: () => void;
 }
 
-export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
+export default function BuiltInTools({ toolKey, language = "en", onClose }: BuiltInToolsProps) {
+  const isEn = language !== "zh_cn" && language !== "zh_tw";
+
   // Common icons
   const ArrowLeftRight = LucideIcons.ArrowLeftRight;
   const Copy = LucideIcons.Copy;
@@ -98,7 +101,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
       const parsed = JSON.parse(jsonInput);
       setJsonOutput(JSON.stringify(parsed, null, 2));
     } catch (err: any) {
-      setJsonError(err.message || "无效的 JSON 格式");
+      setJsonError(err.message || (isEn ? "Invalid JSON format" : "无效的 JSON 格式"));
     }
   };
 
@@ -112,22 +115,34 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
       const parsed = JSON.parse(jsonInput);
       setJsonOutput(JSON.stringify(parsed));
     } catch (err: any) {
-      setJsonError(err.message || "无效的 JSON 格式");
+      setJsonError(err.message || (isEn ? "Invalid JSON format" : "无效的 JSON 格式"));
     }
   };
 
   const loadJsonSample = () => {
-    const sample = {
-      name: "工具导航",
-      version: "1.0.0",
-      description: "开发者口袋工具箱",
-      features: ["分类导航", "我的收藏", "离线微工具", "自定义提交"],
-      stats: {
-        totalTools: 35,
-        builtIn: 5,
-        isActive: true,
-      },
-    };
+    const sample = isEn
+      ? {
+          name: "DevTools Hub",
+          version: "1.0.0",
+          description: "Developer pocket toolbox",
+          features: ["Categorized Directory", "My Favorites", "Offline Micro-tools", "Admin Submission"],
+          stats: {
+            totalTools: 35,
+            builtIn: 5,
+            isActive: true,
+          },
+        }
+      : {
+          name: "工具导航",
+          version: "1.0.0",
+          description: "开发者口袋工具箱",
+          features: ["分类导航", "我的收藏", "离线微工具", "自定义提交"],
+          stats: {
+            totalTools: 35,
+            builtIn: 5,
+            isActive: true,
+          },
+        };
     setJsonInput(JSON.stringify(sample, null, 2));
     setJsonError("");
   };
@@ -140,7 +155,6 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
         setBase64Output("");
         return;
       }
-      // Handle non-latin characters properly using encodeURIComponent / unescape
       const utf8Bytes = new TextEncoder().encode(base64Input);
       let binary = "";
       for (let i = 0; i < utf8Bytes.length; i++) {
@@ -148,7 +162,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
       }
       setBase64Output(window.btoa(binary));
     } catch (err: any) {
-      setBase64Error("编码失败：" + err.message);
+      setBase64Error((isEn ? "Encoding failed: " : "编码失败：") + err.message);
     }
   };
 
@@ -166,7 +180,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
       }
       setBase64Input(new TextDecoder().decode(bytes));
     } catch (err: any) {
-      setBase64Error("解码失败：输入的字符串不是合法的 Base64。");
+      setBase64Error(isEn ? "Decoding failed: Invalid Base64 string." : "解码失败：输入的字符串不是合法的 Base64。");
     }
   };
 
@@ -184,7 +198,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
     if (includeSymbols) pool += symbols;
 
     if (!pool) {
-      setGeneratedPass("请至少勾选一种字符类型！");
+      setGeneratedPass(isEn ? "Please select at least one character set!" : "请至少勾选一种字符类型！");
       return;
     }
 
@@ -200,7 +214,10 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
   };
 
   const getPasswordStrength = () => {
-    if (!generatedPass || generatedPass === "请至少勾选一种字符类型！") return { score: 0, text: "无", color: "bg-gray-200" };
+    const defaultStrengthMsg = isEn ? "Please select at least one character set!" : "请至少勾选一种字符类型！";
+    if (!generatedPass || generatedPass === defaultStrengthMsg) {
+      return { score: 0, text: isEn ? "None" : "无", color: "bg-gray-200" };
+    }
     let score = 0;
     if (generatedPass.length >= 8) score += 1;
     if (generatedPass.length >= 14) score += 1;
@@ -209,10 +226,10 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
     if (/[0-9]/.test(generatedPass)) score += 1;
     if (/[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/.test(generatedPass)) score += 1;
 
-    if (score <= 2) return { score, text: "弱 (易破解)", color: "bg-red-500 w-1/4" };
-    if (score <= 4) return { score, text: "中等 (安全性一般)", color: "bg-amber-500 w-2/4" };
-    if (score <= 5) return { score, text: "强 (高安全度)", color: "bg-blue-500 w-3/4" };
-    return { score, text: "完美 (极度安全)", color: "bg-emerald-500 w-full" };
+    if (score <= 2) return { score, text: isEn ? "Weak (Vulnerable)" : "弱 (易破解)", color: "bg-red-500 w-1/4" };
+    if (score <= 4) return { score, text: isEn ? "Medium (Normal)" : "中等 (安全性一般)", color: "bg-amber-500 w-2/4" };
+    if (score <= 5) return { score, text: isEn ? "Strong (Secure)" : "强 (高安全度)", color: "bg-blue-500 w-3/4" };
+    return { score, text: isEn ? "Perfect (Highly Secure)" : "完美 (极度安全)", color: "bg-emerald-500 w-full" };
   };
 
   // --- Timestamp Converter Functions ---
@@ -220,19 +237,18 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
     try {
       const parsed = parseInt(tsInput.trim());
       if (isNaN(parsed)) {
-        setTsOutput("请输入合法的数字时间戳");
+        setTsOutput(isEn ? "Please input a valid timestamp number" : "请输入合法的数字时间戳");
         return;
       }
-      // Check if milliseconds (usually 13 digits)
       const isMillis = tsInput.trim().length >= 13;
       const date = new Date(isMillis ? parsed : parsed * 1000);
       if (isNaN(date.getTime())) {
-        setTsOutput("无效的时间戳值");
+        setTsOutput(isEn ? "Invalid timestamp value" : "无效的时间戳值");
         return;
       }
       setTsOutput(formatDateString(date));
     } catch {
-      setTsOutput("转换失败");
+      setTsOutput(isEn ? "Conversion failed" : "转换失败");
     }
   };
 
@@ -241,12 +257,16 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
       const cleanStr = dateInput.trim().replace(/\//g, "-");
       const parsed = Date.parse(cleanStr);
       if (isNaN(parsed)) {
-        setDateOutput("请输入合法的时间格式 (YYYY-MM-DD HH:mm:ss)");
+        setDateOutput(isEn ? "Please input a valid date format (YYYY-MM-DD HH:mm:ss)" : "请输入合法的时间格式 (YYYY-MM-DD HH:mm:ss)");
         return;
       }
-      setDateOutput(`秒级时间戳: ${Math.floor(parsed / 1000)}\n毫秒级时间戳: ${parsed}`);
+      setDateOutput(
+        isEn
+          ? `Seconds Timestamp: ${Math.floor(parsed / 1000)}\nMilliseconds Timestamp: ${parsed}`
+          : `秒级时间戳: ${Math.floor(parsed / 1000)}\n毫秒级时间戳: ${parsed}`
+      );
     } catch {
-      setDateOutput("转换失败");
+      setDateOutput(isEn ? "Conversion failed" : "转换失败");
     }
   };
 
@@ -311,25 +331,27 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           <button
             onClick={onClose}
             className="p-2.5 hover:bg-slate-50 text-slate-500 hover:text-indigo-600 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-150"
-            title="返回导航"
+            title={isEn ? "Go Back" : "返回导航"}
           >
             <LucideIcons.ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 text-[10px] font-bold bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-lg">
-                本地内置微应用
+                {isEn ? "Local Built-in Micro-tool" : "本地内置微应用"}
               </span>
               <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
-                {toolKey === "json" && "JSON 格式化 & 验证器"}
-                {toolKey === "base64" && "Base64 编码解码器"}
-                {toolKey === "password" && "随机强密码生成器"}
-                {toolKey === "timestamp" && "UNIX 时间戳转换器"}
-                {toolKey === "text" && "文本分析与变量格式转换"}
+                {toolKey === "json" && (isEn ? "JSON Formatter & Validator" : "JSON 格式化 & 验证器")}
+                {toolKey === "base64" && (isEn ? "Base64 Encoder/Decoder" : "Base64 编码解码器")}
+                {toolKey === "password" && (isEn ? "Strong Password Generator" : "随机强密码生成器")}
+                {toolKey === "timestamp" && (isEn ? "UNIX Timestamp Converter" : "UNIX 时间戳转换器")}
+                {toolKey === "text" && (isEn ? "Text Case Converter & Analyzer" : "文本分析与变量格式转换")}
               </h2>
             </div>
             <p className="text-[11px] text-slate-400 mt-1 font-medium">
-              所有计算与数据转换完全在您的本地浏览器进行，绝不上传至任何服务器，保障您的数据安全。
+              {isEn
+                ? "All calculations and transformations are done locally in your browser. No data is sent to any server."
+                : "所有计算与数据转换完全在您的本地浏览器进行，绝不上传至任何服务器，保障您的数据安全。"}
             </p>
           </div>
         </div>
@@ -338,7 +360,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           onClick={onClose}
           className="px-3.5 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
         >
-          返回导航列表
+          {isEn ? "Back to Dashboard" : "返回导航列表"}
         </button>
       </div>
 
@@ -348,13 +370,15 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-1.5">
-                <label htmlFor={jsonTextareaId} className="text-xs font-semibold text-slate-700">输入原始 JSON 字符串</label>
+                <label htmlFor={jsonTextareaId} className="text-xs font-semibold text-slate-700">
+                  {isEn ? "Input Raw JSON String" : "输入原始 JSON 字符串"}
+                </label>
                 <div className="flex gap-2">
                   <button
                     onClick={loadJsonSample}
                     className="text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer"
                   >
-                    载入示例数据
+                    {isEn ? "Load Sample" : "载入示例数据"}
                   </button>
                   <button
                     onClick={() => {
@@ -365,7 +389,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     className="text-xs font-medium text-slate-400 hover:text-red-500 cursor-pointer flex items-center gap-1"
                   >
                     <Trash2 className="w-3 h-3" />
-                    清空
+                    {isEn ? "Clear" : "清空"}
                   </button>
                 </div>
               </div>
@@ -373,21 +397,21 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 id={jsonTextareaId}
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                placeholder='在这里粘贴未格式化的 JSON 数据... (例如 {"a":1,"b":"hello"})'
+                placeholder={isEn ? 'Paste unformatted JSON here... e.g. {"a":1,"b":"hello"}' : '在这里粘贴未格式化的 JSON 数据... (例如 {"a":1,"b":"hello"})'}
                 className="w-full h-80 p-3 font-mono text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white resize-y"
               />
             </div>
 
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs font-semibold text-slate-700">处理结果</span>
+                <span className="text-xs font-semibold text-slate-700">{isEn ? "Output Result" : "处理结果"}</span>
                 {jsonOutput && (
                   <button
                     onClick={() => handleCopyText(jsonOutput)}
                     className="text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? "已复制！" : "复制代码"}
+                    {copied ? (isEn ? "Copied!" : "已复制！") : (isEn ? "Copy Code" : "复制代码")}
                   </button>
                 )}
               </div>
@@ -396,7 +420,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                   <pre className="whitespace-pre-wrap">{jsonOutput}</pre>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-slate-500 italic">
-                    点击下方 “格式化” 或 “压缩” 按钮生成输出
+                    {isEn ? "Click Format or Minify below to generate output" : "点击下方 “格式化” 或 “压缩” 按钮生成输出"}
                   </div>
                 )}
               </div>
@@ -407,7 +431,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
             <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl font-mono text-xs flex items-start gap-2 animate-pulse">
               <LucideIcons.AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold">JSON 语法错误:</span> {jsonError}
+                <span className="font-bold">{isEn ? "JSON Syntax Error:" : "JSON 语法错误:"}</span> {jsonError}
               </div>
             </div>
           )}
@@ -418,14 +442,14 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
               className="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm flex items-center gap-2"
             >
               <LucideIcons.CheckSquare className="w-4 h-4" />
-              美化 & 格式化
+              {isEn ? "Beautify & Format" : "美化 & 格式化"}
             </button>
             <button
               onClick={handleJsonMinify}
               className="px-4 py-2 text-sm font-semibold bg-slate-700 hover:bg-slate-800 text-white rounded-xl transition-colors cursor-pointer shadow-sm flex items-center gap-2"
             >
               <LucideIcons.Minimize2 className="w-4 h-4" />
-              压缩 JSON
+              {isEn ? "Minify JSON" : "压缩 JSON"}
             </button>
           </div>
         </div>
@@ -437,7 +461,9 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-1.5">
-                <label htmlFor={base64Textarea1Id} className="text-xs font-semibold text-slate-700">原始文本 (UTF-8)</label>
+                <label htmlFor={base64Textarea1Id} className="text-xs font-semibold text-slate-700">
+                  {isEn ? "Plain Text (UTF-8)" : "原始文本 (UTF-8)"}
+                </label>
                 <div className="flex gap-2">
                   {base64Input && (
                     <button
@@ -445,7 +471,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                       className="text-xs font-medium text-slate-500 hover:text-slate-900 cursor-pointer flex items-center gap-1"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      复制
+                      {isEn ? "Copy" : "复制"}
                     </button>
                   )}
                   <button
@@ -456,7 +482,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     className="text-xs font-medium text-slate-400 hover:text-red-500 cursor-pointer flex items-center gap-1"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    清空
+                    {isEn ? "Clear" : "清空"}
                   </button>
                 </div>
               </div>
@@ -464,14 +490,16 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 id={base64Textarea1Id}
                 value={base64Input}
                 onChange={(e) => setBase64Input(e.target.value)}
-                placeholder="在此输入普通文本..."
+                placeholder={isEn ? "Type or paste raw text here..." : "在此输入普通文本..."}
                 className="w-full h-64 p-3 font-mono text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white resize-y"
               />
             </div>
 
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-1.5">
-                <label htmlFor={base64Textarea2Id} className="text-xs font-semibold text-slate-700">Base64 编码文本</label>
+                <label htmlFor={base64Textarea2Id} className="text-xs font-semibold text-slate-700">
+                  {isEn ? "Base64 Encoded Text" : "Base64 编码文本"}
+                </label>
                 <div className="flex gap-2">
                   {base64Output && (
                     <button
@@ -479,7 +507,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                       className="text-xs font-medium text-slate-500 hover:text-slate-900 cursor-pointer flex items-center gap-1"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      复制
+                      {isEn ? "Copy" : "复制"}
                     </button>
                   )}
                   <button
@@ -490,7 +518,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     className="text-xs font-medium text-slate-400 hover:text-red-500 cursor-pointer flex items-center gap-1"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    清空
+                    {isEn ? "Clear" : "清空"}
                   </button>
                 </div>
               </div>
@@ -498,7 +526,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 id={base64Textarea2Id}
                 value={base64Output}
                 onChange={(e) => setBase64Output(e.target.value)}
-                placeholder="在此输入 Base64 字符串..."
+                placeholder={isEn ? "Type or paste Base64 encoded string here..." : "在此输入 Base64 字符串..."}
                 className="w-full h-64 p-3 font-mono text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white resize-y text-emerald-700 font-semibold"
               />
             </div>
@@ -516,7 +544,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
               onClick={handleBase64Encode}
               className="px-5 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm flex items-center gap-2"
             >
-              原始文本 编码为 Base64
+              {isEn ? "Encode Plain Text" : "原始文本 编码为 Base64"}
               <LucideIcons.ArrowRight className="w-4 h-4" />
             </button>
             <button
@@ -524,7 +552,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
               className="px-5 py-2 text-sm font-semibold bg-slate-700 hover:bg-slate-800 text-white rounded-xl transition-colors cursor-pointer shadow-sm flex items-center gap-2"
             >
               <LucideIcons.ArrowLeft className="w-4 h-4" />
-              解码 Base64 为原始文本
+              {isEn ? "Decode Base64" : "解码 Base64 为原始文本"}
             </button>
           </div>
         </div>
@@ -535,7 +563,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
         <div className="space-y-6">
           <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col md:flex-row items-center gap-4">
             <div className="flex-1 w-full">
-              <span className="text-xs text-slate-400 block mb-1">生成的强密码</span>
+              <span className="text-xs text-slate-400 block mb-1">{isEn ? "Generated Secure Password" : "生成的强密码"}</span>
               <div className="relative flex items-center">
                 <input
                   type="text"
@@ -547,7 +575,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                   <button
                     onClick={generatePassword}
                     className="p-2 hover:bg-slate-100 text-slate-500 hover:text-slate-800 rounded-lg transition-colors cursor-pointer"
-                    title="重新生成"
+                    title={isEn ? "Regenerate" : "重新生成"}
                   >
                     <RefreshCw className="w-4 h-4" />
                   </button>
@@ -556,7 +584,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1"
                   >
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? "已复制" : "复制"}
+                    {copied ? (isEn ? "Copied" : "已复制") : (isEn ? "Copy" : "复制")}
                   </button>
                 </div>
               </div>
@@ -566,7 +594,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           {/* Password Strength */}
           <div>
             <div className="flex justify-between items-center mb-1 text-xs font-semibold">
-              <span className="text-slate-600">密码强度评估:</span>
+              <span className="text-slate-600">{isEn ? "Password Strength Evaluation:" : "密码强度评估:"}</span>
               <span className="text-slate-800 font-bold">{getPasswordStrength().text}</span>
             </div>
             <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">
@@ -576,11 +604,13 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-800 border-l-2 border-emerald-500 pl-2">密码长度</h3>
+              <h3 className="text-sm font-bold text-slate-800 border-l-2 border-emerald-500 pl-2">
+                {isEn ? "Password Length" : "密码长度"}
+              </h3>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label htmlFor={passLengthId} className="text-xs text-slate-500">调整字符个数 (4 - 64)</label>
-                  <span className="text-sm font-bold text-slate-800">{passLength} 位</span>
+                  <label htmlFor={passLengthId} className="text-xs text-slate-500">{isEn ? "Adjust length (4 - 64)" : "调整字符个数 (4 - 64)"}</label>
+                  <span className="text-sm font-bold text-slate-800">{passLength} {isEn ? "chars" : "位"}</span>
                 </div>
                 <input
                   id={passLengthId}
@@ -597,7 +627,9 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
             </div>
 
             <div className="space-y-3">
-              <h3 className="text-sm font-bold text-slate-800 border-l-2 border-emerald-500 pl-2">字符集选项</h3>
+              <h3 className="text-sm font-bold text-slate-800 border-l-2 border-emerald-500 pl-2">
+                {isEn ? "Character Set Options" : "字符集选项"}
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
                   <input
@@ -608,7 +640,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     }}
                     className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600"
                   />
-                  大写字母 (A-Z)
+                  {isEn ? "Uppercase (A-Z)" : "大写字母 (A-Z)"}
                 </label>
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
                   <input
@@ -619,7 +651,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     }}
                     className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600"
                   />
-                  小写字母 (a-z)
+                  {isEn ? "Lowercase (a-z)" : "小写字母 (a-z)"}
                 </label>
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
                   <input
@@ -630,7 +662,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     }}
                     className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600"
                   />
-                  数字字符 (0-9)
+                  {isEn ? "Numbers (0-9)" : "数字字符 (0-9)"}
                 </label>
                 <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
                   <input
@@ -641,7 +673,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     }}
                     className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600"
                   />
-                  特殊符号 (!@#$)
+                  {isEn ? "Symbols (!@#$)" : "特殊符号 (!@#$)"}
                 </label>
               </div>
             </div>
@@ -653,7 +685,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
               className="px-5 py-2.5 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer shadow-md flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
-              重新生成密码
+              {isEn ? "Regenerate Password" : "重新生成密码"}
             </button>
           </div>
         </div>
@@ -666,7 +698,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
               <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
-                当前系统北京时间 (UTC+8)
+                {isEn ? "Current Local Time" : "当前系统北京时间 (UTC+8)"}
               </span>
               <p className="font-mono text-lg font-bold text-slate-800 mt-1">
                 {formatDateString(currentTime)}
@@ -675,7 +707,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
             <div className="flex items-center gap-4">
               <div>
                 <span className="text-xs text-slate-400 block text-left sm:text-right font-semibold">
-                  UNIX 时间戳 (秒级)
+                  {isEn ? "UNIX Timestamp (Seconds)" : "UNIX 时间戳 (秒级)"}
                 </span>
                 <p className="font-mono text-lg font-bold text-emerald-600">
                   {Math.floor(currentTime.getTime() / 1000)}
@@ -688,7 +720,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border-emerald-200"
                     : "bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800"
                 }`}
-                title={timePaused ? "继续运行" : "暂停刷新"}
+                title={timePaused ? (isEn ? "Resume Refreshing" : "继续运行") : (isEn ? "Pause Refreshing" : "暂停刷新")}
               >
                 {timePaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
               </button>
@@ -699,24 +731,26 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
             {/* Stamp to date */}
             <div className="p-5 border border-slate-100 rounded-2xl space-y-4">
               <h3 className="text-sm font-bold text-slate-800 border-l-2 border-emerald-500 pl-2">
-                时间戳 ➔ 北京时间
+                {isEn ? "Timestamp ➔ Local Time" : "时间戳 ➔ 北京时间"}
               </h3>
               <div className="space-y-2">
-                <label htmlFor={timestampInputId} className="text-xs text-slate-500 block">输入时间戳 (秒级 / 毫秒级均支持)</label>
+                <label htmlFor={timestampInputId} className="text-xs text-slate-500 block">
+                  {isEn ? "Timestamp (Seconds or Milliseconds)" : "输入时间戳 (秒级 / 毫秒级均支持)"}
+                </label>
                 <div className="flex gap-2">
                   <input
                     id={timestampInputId}
                     type="text"
                     value={tsInput}
                     onChange={(e) => setTsInput(e.target.value)}
-                    placeholder="输入 UNIX 时间戳"
+                    placeholder={isEn ? "Enter timestamp" : "输入 UNIX 时间戳"}
                     className="flex-1 font-mono text-sm border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <button
                     onClick={() => setTsInput(Math.floor(Date.now() / 1000).toString())}
                     className="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
                   >
-                    设为当前
+                    {isEn ? "Set Now" : "设为当前"}
                   </button>
                 </div>
               </div>
@@ -726,18 +760,18 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 className="w-full py-2.5 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2"
               >
                 <ArrowLeftRight className="w-4 h-4" />
-                转换
+                {isEn ? "Convert" : "转换"}
               </button>
 
               {tsOutput && (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-slate-400 font-semibold">转换结果 (本地北京时间)</span>
+                    <span className="text-xs text-slate-400 font-semibold">{isEn ? "Conversion Result (Local Time)" : "转换结果 (本地北京时间)"}</span>
                     <button
                       onClick={() => handleCopyText(tsOutput)}
                       className="text-xs font-medium text-emerald-600 hover:underline cursor-pointer"
                     >
-                      复制
+                      {isEn ? "Copy" : "复制"}
                     </button>
                   </div>
                   <p className="font-mono text-sm font-bold text-slate-800">{tsOutput}</p>
@@ -748,11 +782,11 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
             {/* Date to stamp */}
             <div className="p-5 border border-slate-100 rounded-2xl space-y-4">
               <h3 className="text-sm font-bold text-slate-800 border-l-2 border-emerald-500 pl-2">
-                标准时间 ➔ 时间戳
+                {isEn ? "Standard Time ➔ Timestamp" : "标准时间 ➔ 时间戳"}
               </h3>
               <div className="space-y-2">
                 <label htmlFor={dateInputId} className="text-xs text-slate-500 block">
-                  输入标准时间 (YYYY-MM-DD HH:mm:ss)
+                  {isEn ? "Input Standard Time (YYYY-MM-DD HH:mm:ss)" : "输入标准时间 (YYYY-MM-DD HH:mm:ss)"}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -775,7 +809,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                     }}
                     className="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
                   >
-                    当前时刻
+                    {isEn ? "Set Now" : "当前时刻"}
                   </button>
                 </div>
               </div>
@@ -785,18 +819,18 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 className="w-full py-2.5 text-sm font-semibold bg-slate-700 hover:bg-slate-800 text-white rounded-xl transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2"
               >
                 <ArrowLeftRight className="w-4 h-4" />
-                转换
+                {isEn ? "Convert" : "转换"}
               </button>
 
               {dateOutput && (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-slate-400 font-semibold">转换结果</span>
+                    <span className="text-xs text-slate-400 font-semibold">{isEn ? "Conversion Result" : "转换结果"}</span>
                     <button
                       onClick={() => handleCopyText(dateOutput)}
                       className="text-xs font-medium text-emerald-600 hover:underline cursor-pointer"
                     >
-                      复制全部
+                      {isEn ? "Copy All" : "复制全部"}
                     </button>
                   </div>
                   <pre className="font-mono text-sm font-bold text-slate-800 whitespace-pre-line">
@@ -814,14 +848,16 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
         <div className="space-y-4">
           <div className="flex flex-col">
             <div className="flex justify-between items-center mb-1.5">
-              <label htmlFor={textInputId} className="text-xs font-semibold text-slate-700">输入需要转换或统计的文本</label>
+              <label htmlFor={textInputId} className="text-xs font-semibold text-slate-700">
+                {isEn ? "Input Text to Analyze or Convert" : "输入需要转换或统计的文本"}
+              </label>
               {textInput && (
                 <button
                   onClick={() => setTextInput("")}
                   className="text-xs font-medium text-slate-400 hover:text-red-500 cursor-pointer flex items-center gap-1"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  清空
+                  {isEn ? "Clear" : "清空"}
                 </button>
               )}
             </div>
@@ -829,7 +865,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
               id={textInputId}
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
-              placeholder="在此粘贴或输入任何英文、汉字、代码命名。例如：hello_world 或是 hello world 等..."
+              placeholder={isEn ? "Paste or type any english words, characters, or code variable naming here... e.g. hello_world or hello world" : "在此粘贴或输入任何英文、汉字、代码命名。例如：hello_world 或是 hello world 等..."}
               className="w-full h-48 p-3 font-mono text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white resize-y"
             />
           </div>
@@ -837,19 +873,19 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           {/* Quick Real-Time Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-slate-400 text-[11px] font-bold block uppercase">总字符数 (含空格)</span>
+              <span className="text-slate-400 text-[11px] font-bold block uppercase">{isEn ? "Characters (With spaces)" : "总字符数 (含空格)"}</span>
               <span className="font-mono text-lg font-bold text-slate-800">{charCountWithSpaces}</span>
             </div>
             <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-slate-400 text-[11px] font-bold block uppercase">纯字数 (不含空格)</span>
+              <span className="text-slate-400 text-[11px] font-bold block uppercase">{isEn ? "Characters (No spaces)" : "纯字数 (不含空格)"}</span>
               <span className="font-mono text-lg font-bold text-emerald-600">{charCountWithoutSpaces}</span>
             </div>
             <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-slate-400 text-[11px] font-bold block uppercase">英文单词数 (Words)</span>
+              <span className="text-slate-400 text-[11px] font-bold block uppercase">{isEn ? "Words Count" : "英文单词数 (Words)"}</span>
               <span className="font-mono text-lg font-bold text-slate-800">{wordCount}</span>
             </div>
             <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-slate-400 text-[11px] font-bold block uppercase">文本总行数 (Lines)</span>
+              <span className="text-slate-400 text-[11px] font-bold block uppercase">{isEn ? "Total Lines" : "文本总行数 (Lines)"}</span>
               <span className="font-mono text-lg font-bold text-slate-800">{lineCount}</span>
             </div>
           </div>
@@ -857,7 +893,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
           {/* Formatting Actions */}
           <div className="pt-2">
             <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              英文变量格式 & 大小写转换
+              {isEn ? "Variable Naming & Case Transformations" : "英文变量格式 & 大小写转换"}
             </h3>
             <div className="flex flex-wrap gap-2">
               <button
@@ -865,35 +901,35 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 disabled={!textInput}
                 className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                大写 (UPPERCASE)
+                {isEn ? "UPPERCASE" : "大写 (UPPERCASE)"}
               </button>
               <button
                 onClick={() => handleCaseChange("lower")}
                 disabled={!textInput}
                 className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                小写 (lowercase)
+                {isEn ? "lowercase" : "小写 (lowercase)"}
               </button>
               <button
                 onClick={() => handleCaseChange("camel")}
                 disabled={!textInput}
                 className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                小驼峰 (camelCase)
+                {isEn ? "camelCase" : "小驼峰 (camelCase)"}
               </button>
               <button
                 onClick={() => handleCaseChange("snake")}
                 disabled={!textInput}
                 className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                蛇形 (snake_case)
+                {isEn ? "snake_case" : "蛇形 (snake_case)"}
               </button>
               <button
                 onClick={() => handleCaseChange("kebab")}
                 disabled={!textInput}
                 className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                短横线 (kebab-case)
+                {isEn ? "kebab-case" : "短横线 (kebab-case)"}
               </button>
             </div>
           </div>
@@ -905,7 +941,7 @@ export default function BuiltInTools({ toolKey, onClose }: BuiltInToolsProps) {
                 className="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
               >
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? "已复制！" : "复制当前文本"}
+                {copied ? (isEn ? "Copied!" : "已复制！") : (isEn ? "Copy Text" : "复制当前文本")}
               </button>
             </div>
           )}

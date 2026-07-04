@@ -5,6 +5,7 @@ import * as LucideIcons from "lucide-react";
 import { presetTools, categories } from "./data/presetTools";
 import { Tool, UserCustomTool } from "./types";
 import { Language, translations } from "./lib/translations";
+import { presetToolsTranslations } from "./lib/presetToolsTranslations";
 
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -158,11 +159,23 @@ export default function App() {
     }));
   };
 
-  // Combine and map click counters to the tools database
-  const allTools: Tool[] = [...presetTools, ...customTools].map((t) => ({
-    ...t,
-    clicks: clicks[t.id] || 0,
-  }));
+  // Combine and map click counters to the tools database, applying localization overrides
+  const allTools: Tool[] = [...presetTools, ...customTools].map((t) => {
+    const isChinese = language === "zh_cn" || language === "zh_tw";
+    let localized = { ...t };
+    if (!isChinese) {
+      const trans = presetToolsTranslations[t.id];
+      if (trans) {
+        localized.name = trans.name;
+        localized.description = trans.description;
+        localized.tags = trans.tags;
+      }
+    }
+    return {
+      ...localized,
+      clicks: clicks[t.id] || 0,
+    };
+  });
 
   // Helper: compute counts dynamically
   const getCategoryCount = (catId: string) => {
@@ -247,6 +260,31 @@ export default function App() {
     }
   };
 
+  const getCategoryDescription = () => {
+    if (activeCategory === "all") return t.brandSubtitle;
+    if (activeCategory === "favorites") return t.myFavorites;
+    
+    const cat = categories.find((c) => c.id === activeCategory);
+    if (!cat) return "";
+    
+    const isChinese = language === "zh_cn" || language === "zh_tw";
+    if (isChinese) {
+      return cat.description;
+    }
+    
+    // Non-Chinese / English translation map
+    const descMap: Record<string, string> = {
+      utility: "Pocket box of offline-ready native web micro-utilities with complete privacy.",
+      ai: "Leading large language models, AI image generation, creative agents, and developer assistants.",
+      dev: "Version control, regex debugging, frontend deployments, DNS checkers, and API testing platforms.",
+      design: "Collaborative UI design, vector assets, color palettes, lossless compression, and stock media.",
+      productivity: "Cloud collaboration docs, precision translation, mind mapping, and PDF processing.",
+      other: "Broadband speedtests, IP lookup, hand-drawn wireframes, and academic search portals."
+    };
+    
+    return descMap[activeCategory] || cat.description;
+  };
+
   const isChinese = language === "zh_cn" || language === "zh_tw";
 
   return (
@@ -302,6 +340,7 @@ export default function App() {
                 >
                   <BuiltInTools
                     toolKey={activeBuiltInKey}
+                    language={language}
                     onClose={() => setActiveBuiltInKey(null)}
                   />
                 </motion.div>
@@ -370,7 +409,7 @@ export default function App() {
                         {getCategoryBannerTitle()}
                       </h2>
                       <p className="text-xs text-indigo-200/80">
-                        {activeCategory === "all" ? t.brandSubtitle : (activeCategory === "favorites" ? t.myFavorites : categories.find((c) => c.id === activeCategory)?.description)}
+                        {getCategoryDescription()}
                       </p>
                     </div>
                     <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-[10px] font-bold font-mono tracking-wider text-indigo-200">

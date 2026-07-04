@@ -69,10 +69,10 @@ export default function Header({
           <div className="flex items-center gap-3">
             <button
               onClick={onToggleSidebar}
-              className="lg:hidden p-2 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors"
+              className="p-2.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 border border-slate-200/40 hover:border-slate-300 rounded-2xl cursor-pointer transition-all flex items-center justify-center shadow-sm"
               title={t.categoryAll}
             >
-              <Menu className="w-5.5 h-5.5" />
+              <Menu className="w-4.5 h-4.5" />
             </button>
 
             <div className="flex items-center gap-2.5">

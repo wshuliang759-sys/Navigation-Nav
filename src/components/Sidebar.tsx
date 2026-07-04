@@ -78,8 +78,10 @@ export default function Sidebar({
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-white/95 backdrop-blur-md border-r border-slate-100 p-5 flex flex-col justify-between transform transition-transform duration-300 lg:translate-x-0 lg:static lg:h-[calc(100vh-9.5rem)] lg:sticky lg:top-28 lg:border lg:border-slate-200/50 lg:rounded-3xl lg:shadow-sm lg:p-6 ${
-          isOpen ? "translate-x-0 visible" : "-translate-x-full invisible lg:visible"
+        className={`fixed top-0 bottom-0 left-0 z-40 bg-white/95 backdrop-blur-md border-r border-slate-100 flex flex-col justify-between transform transition-all duration-300 lg:sticky lg:top-28 ${
+          isOpen
+            ? "translate-x-0 w-64 opacity-100 visible p-5 lg:translate-x-0 lg:opacity-100 lg:visible lg:w-64 lg:h-[calc(100vh-9.5rem)] lg:border lg:border-slate-200/50 lg:rounded-3xl lg:shadow-sm lg:p-6"
+            : "-translate-x-full w-0 opacity-0 invisible p-0 lg:-translate-x-4 lg:opacity-0 lg:invisible lg:w-0 lg:p-0 lg:border-none lg:shadow-none"
         }`}
       >
         <div className="space-y-6 overflow-y-auto max-h-[75vh] pr-1 scrollbar-thin">
