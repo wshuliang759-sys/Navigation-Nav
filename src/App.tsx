@@ -8,6 +8,7 @@ import { Tool, UserCustomTool } from "./types";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import ToolCard from "./components/ToolCard";
+import ToolTable from "./components/ToolTable";
 import AddToolModal from "./components/AddToolModal";
 import BuiltInTools from "./components/BuiltInTools";
 
@@ -49,6 +50,24 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeBuiltInKey, setActiveBuiltInKey] = useState<string | null>(null);
+
+  // View mode state ('table' or 'grid'), default to 'table' (high density data mode)
+  const [viewMode, setViewMode] = useState<"grid" | "table">(() => {
+    try {
+      const stored = localStorage.getItem("user_view_mode");
+      return (stored as "grid" | "table") || "table";
+    } catch {
+      return "table";
+    }
+  });
+
+  // Sort metric: 'clicks' | 'name' | 'seoScore' | 'monthlyVisits'
+  const [sortBy, setSortBy] = useState<"clicks" | "name" | "seoScore" | "monthlyVisits">("clicks");
+
+  // Sync viewMode to localStorage
+  useEffect(() => {
+    localStorage.setItem("user_view_mode", viewMode);
+  }, [viewMode]);
 
   // Sync custom tools to localStorage
   useEffect(() => {
@@ -145,13 +164,34 @@ export default function App() {
     return true;
   });
 
-  // Sort tools: highest clicks or alphabetical
+  // Helper to parse traffic visits
+  const parseVisits = (visits?: string): number => {
+    if (!visits) return 0;
+    if (visits === "本地免流") return 10000000000;
+    const val = parseFloat(visits);
+    if (isNaN(val)) return 0;
+    if (visits.endsWith("B")) return val * 1000000000;
+    if (visits.endsWith("M")) return val * 1000000;
+    if (visits.endsWith("K")) return val * 1000;
+    return val;
+  };
+
+  // Sort tools dynamically based on selected sorting metric
   const sortedTools = [...filteredTools].sort((a, b) => {
     // Put built-ins first in their category
     if (a.isBuiltIn && !b.isBuiltIn) return -1;
     if (!a.isBuiltIn && b.isBuiltIn) return 1;
 
-    // Then sort by clicks descending
+    if (sortBy === "name") {
+      return a.name.localeCompare(b.name);
+    }
+    if (sortBy === "seoScore") {
+      return (b.seoTraffic?.seoScore || 0) - (a.seoTraffic?.seoScore || 0);
+    }
+    if (sortBy === "monthlyVisits") {
+      return parseVisits(b.seoTraffic?.monthlyVisits) - parseVisits(a.seoTraffic?.monthlyVisits);
+    }
+    // Default or clicks sorting
     return (b.clicks || 0) - (a.clicks || 0);
   });
 
@@ -285,22 +325,112 @@ export default function App() {
                     </span>
                   </div>
 
+                  {/* Layout & Sorting Control Bar */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 bg-white border border-slate-200/50 p-4 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] select-none">
+                    {/* View Switcher */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-400">视图布局:</span>
+                      <div className="inline-flex bg-slate-100 p-1 rounded-2xl">
+                        <button
+                          onClick={() => setViewMode("table")}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            viewMode === "table"
+                              ? "bg-white text-indigo-600 shadow-sm"
+                              : "text-slate-500 hover:text-slate-800"
+                          }`}
+                        >
+                          <LucideIcons.List className="w-3.5 h-3.5" />
+                          <span>数据表盘型</span>
+                        </button>
+                        <button
+                          onClick={() => setViewMode("grid")}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            viewMode === "grid"
+                              ? "bg-white text-indigo-600 shadow-sm"
+                              : "text-slate-500 hover:text-slate-800"
+                          }`}
+                        >
+                          <LucideIcons.LayoutGrid className="w-3.5 h-3.5" />
+                          <span>精美卡片型</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Sort Selector */}
+                    <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+                      <span className="text-xs font-bold text-slate-400">排序指标:</span>
+                      <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto py-0.5">
+                        <button
+                          onClick={() => setSortBy("clicks")}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                            sortBy === "clicks"
+                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
+                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                          }`}
+                        >
+                          🔥 点击热度
+                        </button>
+                        <button
+                          onClick={() => setSortBy("seoScore")}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                            sortBy === "seoScore"
+                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
+                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                          }`}
+                        >
+                          🎯 SEO 评分
+                        </button>
+                        <button
+                          onClick={() => setSortBy("monthlyVisits")}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                            sortBy === "monthlyVisits"
+                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
+                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                          }`}
+                        >
+                          📈 流量规模
+                        </button>
+                        <button
+                          onClick={() => setSortBy("name")}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                            sortBy === "name"
+                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
+                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                          }`}
+                        >
+                          🔤 字母排序
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Grid View */}
                   {sortedTools.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                      {sortedTools.map((tool) => (
-                        <div key={tool.id} className="h-full">
-                          <ToolCard
-                            tool={tool}
-                            isFavorited={favorites.includes(tool.id)}
-                            onToggleFavorite={handleToggleFavorite}
-                            onTagClick={(tag) => setSelectedTag(tag)}
-                            onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
-                            incrementClicks={handleIncrementClicks}
-                          />
-                        </div>
-                      ))}
-                    </div>
+                    viewMode === "table" ? (
+                      <ToolTable
+                        tools={sortedTools}
+                        favorites={favorites}
+                        onToggleFavorite={handleToggleFavorite}
+                        onTagClick={(tag) => setSelectedTag(tag)}
+                        onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
+                        incrementClicks={handleIncrementClicks}
+                      />
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {sortedTools.map((tool) => (
+                          <div key={tool.id} className="h-full">
+                            <ToolCard
+                              tool={tool}
+                              isFavorited={favorites.includes(tool.id)}
+                              onToggleFavorite={handleToggleFavorite}
+                              onTagClick={(tag) => setSelectedTag(tag)}
+                              onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
+                              incrementClicks={handleIncrementClicks}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )
                   ) : (
                     <div className="text-center py-20 bg-white border border-slate-200/60 rounded-3xl p-6 flex flex-col items-center justify-center max-w-lg mx-auto shadow-sm">
                       <div className="p-4 bg-slate-50 text-slate-400 rounded-full mb-4">

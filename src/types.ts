@@ -10,6 +10,12 @@ export interface Tool {
   isBuiltIn?: boolean;
   builtInKey?: string; // Key to map to a built-in utility view
   clicks?: number;
+  alternatives?: Array<{ name: string; url: string }>;
+  seoTraffic?: {
+    rank?: number; // Global rank / Traffic rank index
+    monthlyVisits?: string; // Monthly traffic estimate e.g., "1.2M", "500K"
+    seoScore?: number; // SEO health index (0-100)
+  };
 }
 
 export interface Category {
