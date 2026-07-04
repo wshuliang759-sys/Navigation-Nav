@@ -1,6 +1,7 @@
 import { useState, useId, MouseEvent } from "react";
 import * as LucideIcons from "lucide-react";
 import { Tool } from "../types";
+import { TranslationDict } from "../lib/translations";
 
 interface ToolTableProps {
   tools: Tool[];
@@ -9,6 +10,7 @@ interface ToolTableProps {
   onTagClick: (tag: string) => void;
   onSelectBuiltIn: (key: string) => void;
   incrementClicks: (id: string) => void;
+  t: TranslationDict;
 }
 
 export default function ToolTable({
@@ -18,6 +20,7 @@ export default function ToolTable({
   onTagClick,
   onSelectBuiltIn,
   incrementClicks,
+  t,
 }: ToolTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const tableId = useId();
@@ -25,7 +28,7 @@ export default function ToolTable({
   // Helper to parse visits to number for analytics calculation
   const parseVisitsToNumber = (visits?: string): number => {
     if (!visits) return 0;
-    if (visits === "本地免流") return 0;
+    if (visits === "本地免流" || visits === "免流" || visits === "Local") return 0;
     const val = parseFloat(visits);
     if (isNaN(val)) return 0;
     if (visits.endsWith("B")) return val * 1000000000;
@@ -58,13 +61,14 @@ export default function ToolTable({
 
   // Total Traffic
   const totalVisitsNum = tools.reduce((acc, t) => acc + parseVisitsToNumber(t.seoTraffic?.monthlyVisits), 0);
+
   const totalVisitsStr = totalVisitsNum >= 1000000000 
     ? `${(totalVisitsNum / 1000000000).toFixed(1)}B` 
     : totalVisitsNum >= 1000000 
     ? `${(totalVisitsNum / 1000000).toFixed(1)}M` 
     : totalVisitsNum > 0 
     ? `${Math.round(totalVisitsNum / 1000)}K` 
-    : "本地免流";
+    : "Local";
 
   // Find tool with maximum visits
   const maxTrafficTool = [...tools].sort((a, b) => {
@@ -82,10 +86,10 @@ export default function ToolTable({
             </div>
             <div>
               <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                当前筛选 估算月度总流量
+                {t.estMonthlyTraffic}
               </p>
               <h4 className="text-xl font-black text-slate-800 tracking-tight mt-0.5">
-                {totalVisitsStr === "本地免流" ? "100% 本地运算" : `~ ${totalVisitsStr} 次/月`}
+                {totalVisitsStr === "Local" ? "100% Offline Local" : `~ ${totalVisitsStr}`}
               </h4>
             </div>
           </div>
@@ -96,7 +100,7 @@ export default function ToolTable({
             </div>
             <div>
               <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                平均 SEO 健康度指数
+                {t.avgSeoScore}
               </p>
               <div className="flex items-baseline gap-1 mt-0.5">
                 <span className="text-xl font-black text-slate-800 tracking-tight">
@@ -113,14 +117,14 @@ export default function ToolTable({
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                当前板块流量霸主
+                {t.categoryLeader}
               </p>
               <p className="text-sm font-extrabold text-slate-800 mt-0.5 truncate">
-                {maxTrafficTool ? maxTrafficTool.name : "暂无"}
+                {maxTrafficTool ? maxTrafficTool.name : "N/A"}
               </p>
               {maxTrafficTool && maxTrafficTool.seoTraffic && (
                 <p className="text-[10px] text-amber-600 font-bold font-mono">
-                  月活: ~ {maxTrafficTool.seoTraffic.monthlyVisits} (SEO {maxTrafficTool.seoTraffic.seoScore}分)
+                  Visits: ~ {maxTrafficTool.seoTraffic.monthlyVisits} (SEO {maxTrafficTool.seoTraffic.seoScore})
                 </p>
               )}
             </div>
@@ -135,12 +139,12 @@ export default function ToolTable({
           <table className="w-full text-left border-collapse min-w-[800px] hidden md:table">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-black uppercase tracking-wider text-slate-400 select-none">
-                <th className="py-4 px-6 w-[280px]">应用名称与描述</th>
-                <th className="py-4 px-4 w-[120px]">所属分类</th>
-                <th className="py-4 px-4 w-[160px]">SEO 流量指标</th>
-                <th className="py-4 px-4 w-[240px]">替代方案 & 链接</th>
-                <th className="py-4 px-4 w-[80px] text-center">热度</th>
-                <th className="py-4 px-6 w-[140px] text-right">操作</th>
+                <th className="py-4 px-6 w-[280px]">{t.colName}</th>
+                <th className="py-4 px-4 w-[120px]">{t.colCategory}</th>
+                <th className="py-4 px-4 w-[160px]">{t.colSeo}</th>
+                <th className="py-4 px-4 w-[240px]">{t.colAlternatives}</th>
+                <th className="py-4 px-4 w-[80px] text-center">{t.colPopularity}</th>
+                <th className="py-4 px-6 w-[140px] text-right">{t.colAction}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/60">
@@ -182,12 +186,12 @@ export default function ToolTable({
                             </span>
                             {tool.isBuiltIn && (
                               <span className="px-1.5 py-0.5 text-[8px] font-black bg-emerald-100 border border-emerald-200 text-emerald-800 rounded">
-                                内置
+                                {t.builtInBadge}
                               </span>
                             )}
                             {tool.isCustom && (
                               <span className="px-1.5 py-0.5 text-[8px] font-black bg-violet-100 border border-violet-200 text-violet-800 rounded">
-                                自建
+                                {t.customBadge}
                               </span>
                             )}
                           </div>
@@ -216,12 +220,12 @@ export default function ToolTable({
                     {/* Category */}
                     <td className="py-3 px-4 text-xs font-bold text-slate-500 vertical-align-middle">
                       <span className="px-2 py-1 bg-slate-100 rounded-lg text-[10px] text-slate-600 select-none border border-slate-150">
-                        {tool.category === "ai" && "🤖 AI智能"}
-                        {tool.category === "dev" && "💻 开发运维"}
-                        {tool.category === "design" && "🎨 设计视觉"}
-                        {tool.category === "productivity" && "📝 效率办公"}
-                        {tool.category === "other" && "🔍 其他资源"}
-                        {tool.category === "utility" && "🧳 内置工具"}
+                        {tool.category === "ai" && t.categoryAi}
+                        {tool.category === "dev" && t.categoryDev}
+                        {tool.category === "design" && t.categoryDesign}
+                        {tool.category === "productivity" && t.categoryProductivity}
+                        {tool.category === "other" && t.categoryOther}
+                        {tool.category === "utility" && t.categoryUtility}
                       </span>
                     </td>
 
@@ -229,20 +233,20 @@ export default function ToolTable({
                     <td className="py-3 px-4 vertical-align-middle text-[11px]">
                       <div className="space-y-1 font-semibold">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-slate-400">SEO评分:</span>
+                          <span className="text-slate-400">SEO:</span>
                           <span className={`px-1.5 py-0.2 font-black text-[9px] border rounded ${scoreColor}`}>
-                            {score}分
+                            {score}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-slate-500">
-                          <span className="text-slate-400">月访问:</span>
+                          <span className="text-slate-400">Visits:</span>
                           <span className="font-mono font-bold text-slate-700 bg-slate-50 px-1 rounded">
-                            {tool.seoTraffic?.monthlyVisits || "免流"}
+                            {tool.seoTraffic?.monthlyVisits || "Local"}
                           </span>
                         </div>
                         {tool.seoTraffic?.rank && (
                           <div className="flex items-center gap-1.5 text-slate-500">
-                            <span className="text-slate-400">流量排名:</span>
+                            <span className="text-slate-400">Rank:</span>
                             <span className="font-mono text-slate-500">#{tool.seoTraffic.rank}</span>
                           </div>
                         )}
@@ -253,7 +257,7 @@ export default function ToolTable({
                     <td className="py-3 px-4 vertical-align-middle text-xs">
                       {tool.alternatives && tool.alternatives.length > 0 ? (
                         <div className="flex flex-col gap-1">
-                          <span className="text-[10px] text-slate-400 font-bold select-none">替代方案:</span>
+                          <span className="text-[10px] text-slate-400 font-bold select-none">{t.colAlternatives}:</span>
                           <div className="flex flex-wrap gap-1.5">
                             {tool.alternatives.map((alt, idx) => (
                               <a
@@ -271,14 +275,14 @@ export default function ToolTable({
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-slate-300 font-medium italic">无合适替代款</span>
+                        <span className="text-[10px] text-slate-300 font-medium italic">{t.noAlternatives}</span>
                       )}
                     </td>
 
                     {/* Popularity/clicks */}
                     <td className="py-3 px-4 text-center vertical-align-middle">
                       <span className="font-mono font-extrabold text-[11px] text-indigo-600 bg-indigo-50/50 border border-indigo-100 px-2 py-0.5 rounded-lg select-none">
-                        {tool.clicks || 0} Click
+                        {tool.clicks || 0}
                       </span>
                     </td>
 
@@ -289,7 +293,7 @@ export default function ToolTable({
                         <button
                           onClick={() => onToggleFavorite(tool.id)}
                           className="p-2 hover:bg-slate-50 text-slate-300 hover:text-amber-500 rounded-xl transition-colors cursor-pointer"
-                          title={isFavorited ? "取消收藏" : "加入收藏"}
+                          title="Favorite"
                         >
                           <LucideIcons.Star
                             className={`w-4 h-4 ${
@@ -303,7 +307,7 @@ export default function ToolTable({
                           <button
                             onClick={(e) => handleCopyLink(e, tool.id, tool.url)}
                             className="p-2 hover:bg-slate-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-200"
-                            title="复制网址链接"
+                            title="Copy Link"
                           >
                             {isCopied ? (
                               <LucideIcons.Check className="w-4 h-4 text-emerald-600" />
@@ -317,7 +321,7 @@ export default function ToolTable({
                         <button
                           onClick={() => handleRowClick(tool)}
                           className="p-2 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 rounded-xl transition-all cursor-pointer"
-                          title={tool.isBuiltIn ? "本地开跑" : "直达官网"}
+                          title={tool.isBuiltIn ? "Run" : "Visit"}
                         >
                           {tool.isBuiltIn ? (
                             <LucideIcons.Play className="w-3.5 h-3.5" />
@@ -356,7 +360,7 @@ export default function ToolTable({
                       <div>
                         <h4 className="font-extrabold text-sm text-slate-800">{tool.name}</h4>
                         <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border">
-                          {tool.seoTraffic?.monthlyVisits === "本地免流" ? "本地免流" : `月活: ${tool.seoTraffic?.monthlyVisits}`}
+                          {tool.seoTraffic?.monthlyVisits === "本地免流" || tool.seoTraffic?.monthlyVisits === "免流" ? "Local" : `Visits: ${tool.seoTraffic?.monthlyVisits}`}
                         </span>
                       </div>
                     </div>
@@ -379,7 +383,7 @@ export default function ToolTable({
                   {/* Alternatives */}
                   {tool.alternatives && tool.alternatives.length > 0 && (
                     <div className="space-y-1">
-                      <p className="text-[10px] text-slate-400 font-extrabold">推荐替代款:</p>
+                      <p className="text-[10px] text-slate-400 font-extrabold">{t.colAlternatives}:</p>
                       <div className="flex flex-wrap gap-1.5">
                         {tool.alternatives.map((alt, idx) => (
                           <a
@@ -400,7 +404,7 @@ export default function ToolTable({
 
                   <div className="flex justify-between items-center border-t border-slate-100 pt-3">
                     <span className="text-[10px] font-mono text-slate-400 bg-slate-150 px-2 py-0.5 rounded">
-                      SEO得分: {tool.seoTraffic?.seoScore || 100} / 100
+                      SEO Score: {tool.seoTraffic?.seoScore || 100} / 100
                     </span>
 
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -416,7 +420,7 @@ export default function ToolTable({
                         onClick={() => handleRowClick(tool)}
                         className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm"
                       >
-                        <span>{tool.isBuiltIn ? "运行" : "直达"}</span>
+                        <span>{tool.isBuiltIn ? "Run" : "Visit"}</span>
                         <LucideIcons.ArrowUpRight className="w-3 h-3" />
                       </button>
                     </div>

@@ -1382,5 +1382,355 @@ export const presetTools: Tool[] = [
       { name: "掘金 (Juejin)", url: "https://juejin.cn/" }
     ],
     seoTraffic: { rank: 1800, monthlyVisits: "9.5M", seoScore: 90 }
+  },
+  {
+    id: "oss-vscode",
+    name: "Visual Studio Code (VS Code)",
+    description: "The world's most popular open-source-based code editor, built on Electron with rich ecosystem plugins.",
+    url: "https://code.visualstudio.com/",
+    category: "dev",
+    tags: ["Open Source", "Code Editor", "Microsoft", "Extensions"],
+    icon: "Code",
+    alternatives: [
+      { name: "Cursor AI", url: "https://cursor.com/" },
+      { name: "Sublime Text", url: "https://www.sublimetext.com/" }
+    ],
+    seoTraffic: { rank: 35, monthlyVisits: "45M", seoScore: 98 }
+  },
+  {
+    id: "oss-firefox",
+    name: "Mozilla Firefox",
+    description: "Privacy-first, independent open-source web browser backed by the non-profit Mozilla Foundation.",
+    url: "https://www.mozilla.org/firefox/",
+    category: "other",
+    tags: ["Browser", "Open Source", "Privacy", "Web Standards"],
+    icon: "Globe",
+    alternatives: [
+      { name: "Google Chrome", url: "https://www.google.com/chrome/" },
+      { name: "Brave Browser", url: "https://brave.com/" }
+    ],
+    seoTraffic: { rank: 80, monthlyVisits: "115M", seoScore: 99 }
+  },
+  {
+    id: "oss-blender",
+    name: "Blender 3D",
+    description: "Free and open-source 3D creation suite supporting modeling, rigging, animation, rendering, and compositing.",
+    url: "https://www.blender.org/",
+    category: "design",
+    tags: ["3D Modelling", "Animation", "Open Source", "Rendering"],
+    icon: "Palette",
+    alternatives: [
+      { name: "Autodesk Maya", url: "https://www.autodesk.com/products/maya/" },
+      { name: "Cinema 4D", url: "https://www.maxon.net/cinema-4d/" }
+    ],
+    seoTraffic: { rank: 1200, monthlyVisits: "18M", seoScore: 95 }
+  },
+  {
+    id: "oss-obs",
+    name: "OBS Studio",
+    description: "Free and open-source software for video recording and live streaming on Windows, Mac, and Linux.",
+    url: "https://obsproject.com/",
+    category: "design",
+    tags: ["Live Streaming", "Screen Recorder", "Video", "Open Source"],
+    icon: "Tv",
+    alternatives: [
+      { name: "Streamlabs", url: "https://streamlabs.com/" },
+      { name: "Camtasia Studio", url: "https://www.techsmith.com/camtasia.html" }
+    ],
+    seoTraffic: { rank: 1400, monthlyVisits: "16M", seoScore: 96 }
+  },
+  {
+    id: "oss-handbrake",
+    name: "HandBrake Video Transcoder",
+    description: "Open-source tool for converting video from nearly any format to a selection of modern, widely supported codecs.",
+    url: "https://handbrake.fr/",
+    category: "design",
+    tags: ["Video Encoder", "Transcoder", "Open Source", "Converter"],
+    icon: "MonitorPlay",
+    alternatives: [
+      { name: "Adobe Media Encoder", url: "https://www.adobe.com/products/media-encoder.html" },
+      { name: "FFmpeg", url: "https://ffmpeg.org/" }
+    ],
+    seoTraffic: { rank: 3200, monthlyVisits: "4.8M", seoScore: 92 }
+  },
+  {
+    id: "oss-vlc",
+    name: "VLC Media Player",
+    description: "Free and open-source cross-platform multimedia player that plays most multimedia files as well as discs and streams.",
+    url: "https://www.videolan.org/vlc/",
+    category: "other",
+    tags: ["Media Player", "Video Player", "Codec pack", "Open Source"],
+    icon: "Play",
+    alternatives: [
+      { name: "IINA Mac Player", url: "https://iina.io/" },
+      { name: "PotPlayer", url: "https://potplayer.daum.net/" }
+    ],
+    seoTraffic: { rank: 310, monthlyVisits: "38M", seoScore: 97 }
+  },
+  {
+    id: "oss-gimp",
+    name: "GIMP Image Editor",
+    description: "GNU Image Manipulation Program, a cross-platform open-source image editor for photo retouching and composition.",
+    url: "https://www.gimp.org/",
+    category: "design",
+    tags: ["Image Editor", "Photoshop Alternative", "Open Source", "Design"],
+    icon: "Image",
+    alternatives: [
+      { name: "Adobe Photoshop", url: "https://www.adobe.com/products/photoshop.html" },
+      { name: "Photopea", url: "https://www.photopea.com/" }
+    ],
+    seoTraffic: { rank: 1900, monthlyVisits: "7.2M", seoScore: 93 }
+  },
+  {
+    id: "oss-audacity",
+    name: "Audacity Audio Editor",
+    description: "Easy-to-use, multi-track audio editor and recorder for Windows, macOS, GNU/Linux and other operating systems.",
+    url: "https://www.audacityteam.org/",
+    category: "design",
+    tags: ["Audio Recorder", "Music Editor", "Open Source", "Sound Design"],
+    icon: "Volume2",
+    alternatives: [
+      { name: "Adobe Audition", url: "https://www.adobe.com/products/audition.html" },
+      { name: "Reaper DAW", url: "https://www.reaper.fm/" }
+    ],
+    seoTraffic: { rank: 1600, monthlyVisits: "9.1M", seoScore: 94 }
+  },
+  {
+    id: "oss-inkscape",
+    name: "Inkscape Vector Graphics",
+    description: "Professional vector graphics editor for Windows, Mac OS X and Linux. It is free and open source.",
+    url: "https://inkscape.org/",
+    category: "design",
+    tags: ["Vector Drawing", "SVG Editor", "Open Source", "Creative"],
+    icon: "Compass",
+    alternatives: [
+      { name: "Adobe Illustrator", url: "https://www.adobe.com/products/illustrator.html" },
+      { name: "Figma Designer", url: "https://www.figma.com/" }
+    ],
+    seoTraffic: { rank: 2800, monthlyVisits: "4.5M", seoScore: 91 }
+  },
+  {
+    id: "oss-bitwarden",
+    name: "Bitwarden Password Manager",
+    description: "Secure open-source password manager for individuals, teams, and business organizations to secure credentials.",
+    url: "https://bitwarden.com/",
+    category: "productivity",
+    tags: ["Password Locker", "Security", "Open Source", "Cloud Sync"],
+    icon: "KeyRound",
+    alternatives: [
+      { name: "1Password", url: "https://1password.com/" },
+      { name: "LastPass", url: "https://www.lastpass.com/" }
+    ],
+    seoTraffic: { rank: 820, monthlyVisits: "15M", seoScore: 96 }
+  },
+  {
+    id: "oss-joplin",
+    name: "Joplin Notebook",
+    description: "An open-source note-taking and to-do application with markdown and end-to-end encryption support.",
+    url: "https://joplinapp.org/",
+    category: "productivity",
+    tags: ["Notebook", "Markdown", "Encryption", "Open Source"],
+    icon: "BookOpen",
+    alternatives: [
+      { name: "Obsidian Notes", url: "https://obsidian.md/" },
+      { name: "Notion Wiki", url: "https://www.notion.so/" }
+    ],
+    seoTraffic: { rank: 12000, monthlyVisits: "0.8M", seoScore: 89 }
+  },
+  {
+    id: "oss-logseq",
+    name: "Logseq Outliner",
+    description: "A privacy-first, open-source knowledge database and outliner tool that stores data locally on plain text files.",
+    url: "https://logseq.com/",
+    category: "productivity",
+    tags: ["Knowledge Graph", "Outliner", "Local First", "Open Source"],
+    icon: "Network",
+    alternatives: [
+      { name: "Roam Research", url: "https://roamresearch.com/" },
+      { name: "Obsidian Notes", url: "https://obsidian.md/" }
+    ],
+    seoTraffic: { rank: 18000, monthlyVisits: "0.6M", seoScore: 87 }
+  },
+  {
+    id: "oss-homeassistant",
+    name: "Home Assistant",
+    description: "Open-source home automation that puts local control and privacy first. Perfect to run on a Raspberry Pi.",
+    url: "https://www.home-assistant.io/",
+    category: "other",
+    tags: ["Smart Home", "IoT", "Automation", "Open Source"],
+    icon: "Home",
+    alternatives: [
+      { name: "Apple HomeKit", url: "https://www.apple.com/home-app/" },
+      { name: "Google Home", url: "https://home.google.com/" }
+    ],
+    seoTraffic: { rank: 3500, monthlyVisits: "5.5M", seoScore: 94 }
+  },
+  {
+    id: "oss-jellyfin",
+    name: "Jellyfin Media System",
+    description: "The volunteer-built, media server software that puts you in control of managing and streaming your media.",
+    url: "https://jellyfin.org/",
+    category: "other",
+    tags: ["Media Server", "Self Hosted", "Streaming", "Open Source"],
+    icon: "Monitor",
+    alternatives: [
+      { name: "Plex Media Server", url: "https://www.plex.tv/" },
+      { name: "Emby Server", url: "https://emby.media/" }
+    ],
+    seoTraffic: { rank: 7500, monthlyVisits: "2.1M", seoScore: 91 }
+  },
+  {
+    id: "oss-libreoffice",
+    name: "LibreOffice",
+    description: "A powerful, free and open-source office suite, a successor project to OpenOffice.org with writer, calc, and impress.",
+    url: "https://www.libreoffice.org/",
+    category: "productivity",
+    tags: ["Office Suite", "Excel Alternative", "Open Source", "Docs"],
+    icon: "FileText",
+    alternatives: [
+      { name: "Microsoft 365", url: "https://www.microsoft.com/microsoft-365" },
+      { name: "Google Workspace", url: "https://workspace.google.com/" }
+    ],
+    seoTraffic: { rank: 2100, monthlyVisits: "6.0M", seoScore: 94 }
+  },
+  {
+    id: "oss-sharex",
+    name: "ShareX Capture",
+    description: "Free and open-source program that lets you capture or record any area of your screen and share it with a press of a key.",
+    url: "https://getsharex.com/",
+    category: "productivity",
+    tags: ["Screen Capture", "GIF Recorder", "Windows Tool", "Open Source"],
+    icon: "Camera",
+    alternatives: [
+      { name: "Snagit Recorder", url: "https://www.techsmith.com/screen-capture.html" },
+      { name: "CleanShot X Mac", url: "https://cleanshot.com/" }
+    ],
+    seoTraffic: { rank: 9800, monthlyVisits: "1.4M", seoScore: 89 }
+  },
+  {
+    id: "oss-nextcloud",
+    name: "Nextcloud",
+    description: "A suite of client-server software for creating and using file hosting services. It is highly enterprise-ready.",
+    url: "https://nextcloud.com/",
+    category: "productivity",
+    tags: ["Cloud Storage", "Self Hosted Drive", "Open Source", "Collab"],
+    icon: "HardDrive",
+    alternatives: [
+      { name: "Google Drive", url: "https://www.google.com/drive/" },
+      { name: "Dropbox", url: "https://www.dropbox.com/" }
+    ],
+    seoTraffic: { rank: 4100, monthlyVisits: "3.2M", seoScore: 93 }
+  },
+  {
+    id: "oss-syncthing",
+    name: "Syncthing",
+    description: "A continuous file synchronization program. It synchronizes files between two or more computers in real time.",
+    url: "https://syncthing.net/",
+    category: "other",
+    tags: ["File Sync", "P2P Transfer", "Open Source", "Decentralized"],
+    icon: "RefreshCw",
+    alternatives: [
+      { name: "Resilio Sync", url: "https://www.resilio.com/" },
+      { name: "Microsoft OneDrive", url: "https://www.microsoft.com/onedrive" }
+    ],
+    seoTraffic: { rank: 11000, monthlyVisits: "1.1M", seoScore: 88 }
+  },
+  {
+    id: "oss-mastodon",
+    name: "Mastodon Social",
+    description: "The largest decentralized open-source microblogging network in the world, built on ActivityPub protocol.",
+    url: "https://joinmastodon.org/",
+    category: "other",
+    tags: ["Decentralized", "Federated", "ActivityPub", "Open Source"],
+    icon: "MessageSquare",
+    alternatives: [
+      { name: "Twitter / X", url: "https://x.com/" },
+      { name: "Threads by Meta", url: "https://www.threads.net/" }
+    ],
+    seoTraffic: { rank: 5400, monthlyVisits: "2.8M", seoScore: 93 }
+  },
+  {
+    id: "oss-docker",
+    name: "Docker Container Platform",
+    description: "The industry standard platform for developers to build, share, and run modern applications with containers.",
+    url: "https://www.docker.com/",
+    category: "dev",
+    tags: ["Containerization", "DevOps", "Open Source Engine", "Microservices"],
+    icon: "Boxes",
+    alternatives: [
+      { name: "Podman Desktop", url: "https://podman-desktop.io/" },
+      { name: "LXD Containers", url: "https://images.linuxcontainers.org/" }
+    ],
+    seoTraffic: { rank: 210, monthlyVisits: "24M", seoScore: 97 }
+  },
+  {
+    id: "oss-kubernetes",
+    name: "Kubernetes (K8s)",
+    description: "An open-source container-orchestration system for automating computer application deployment, scaling, and management.",
+    url: "https://kubernetes.io/",
+    category: "dev",
+    tags: ["Orchestration", "Cloud Native", "DevOps", "Open Source Core"],
+    icon: "Cpu",
+    alternatives: [
+      { name: "Docker Swarm", url: "https://docs.docker.com/engine/swarm/" },
+      { name: "HashiCorp Nomad", url: "https://www.nomadproject.io/" }
+    ],
+    seoTraffic: { rank: 1100, monthlyVisits: "4.2M", seoScore: 95 }
+  },
+  {
+    id: "oss-git",
+    name: "Git Version Control",
+    description: "Free and open source distributed version control system designed to handle everything from small to very large projects.",
+    url: "https://git-scm.com/",
+    category: "dev",
+    tags: ["Version Control", "CLI", "Developer Tool", "Open Source"],
+    icon: "GitBranch",
+    alternatives: [
+      { name: "Apache Subversion SVN", url: "https://subversion.apache.org/" },
+      { name: "Mercurial VCS", url: "https://www.mercurial-scm.org/" }
+    ],
+    seoTraffic: { rank: 180, monthlyVisits: "21M", seoScore: 98 }
+  },
+  {
+    id: "oss-prometheus",
+    name: "Prometheus Monitoring",
+    description: "An open-source systems monitoring and alerting toolkit originally built at SoundCloud, storing TSDB data.",
+    url: "https://prometheus.io/",
+    category: "dev",
+    tags: ["Monitoring", "Alerting", "TSDB Metrics", "Open Source"],
+    icon: "Activity",
+    alternatives: [
+      { name: "Datadog Cloud", url: "https://www.datadoghq.com/" },
+      { name: "Dynatrace Suite", url: "https://www.dynatrace.com/" }
+    ],
+    seoTraffic: { rank: 4500, monthlyVisits: "2.5M", seoScore: 92 }
+  },
+  {
+    id: "oss-grafana",
+    name: "Grafana Analytics & Dashboards",
+    description: "The open-source platform for query, visualization, alerting, and understanding metrics no matter where they are.",
+    url: "https://grafana.com/",
+    category: "dev",
+    tags: ["Dashboard", "Analytics", "Data Visualization", "Open Source"],
+    icon: "BarChart3",
+    alternatives: [
+      { name: "Kibana Elastic", url: "https://www.elastic.co/kibana" },
+      { name: "Tableau Visuals", url: "https://www.tableau.com/" }
+    ],
+    seoTraffic: { rank: 1400, monthlyVisits: "7.8M", seoScore: 96 }
+  },
+  {
+    id: "oss-outline",
+    name: "Outline Wiki",
+    description: "A fast, modern, and beautiful collaborative open-source wiki and knowledge base for your growing team.",
+    url: "https://www.getoutline.com/",
+    category: "productivity",
+    tags: ["Team Wiki", "Markdown Doc", "Knowledge base", "Open Source"],
+    icon: "FolderGit",
+    alternatives: [
+      { name: "Confluence Cloud", url: "https://www.atlassian.com/software/confluence" },
+      { name: "Notion Enterprise", url: "https://www.notion.so/" }
+    ],
+    seoTraffic: { rank: 24000, monthlyVisits: "0.4M", seoScore: 88 }
   }
 ];

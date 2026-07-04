@@ -4,6 +4,7 @@ import * as LucideIcons from "lucide-react";
 
 import { presetTools, categories } from "./data/presetTools";
 import { Tool, UserCustomTool } from "./types";
+import { Language, translations } from "./lib/translations";
 
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -13,6 +14,26 @@ import AddToolModal from "./components/AddToolModal";
 import BuiltInTools from "./components/BuiltInTools";
 
 export default function App() {
+  // State: selected active language (defaulting to English "en")
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      const stored = localStorage.getItem("user_lang");
+      return (stored as Language) || "en";
+    } catch {
+      return "en";
+    }
+  });
+
+  // State: Admin authorization (for restricting "add tools" functionality)
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem("admin_session");
+      return stored === "active";
+    } catch {
+      return false;
+    }
+  });
+
   // State 1: Custom User Tools (persisted in localStorage)
   const [customTools, setCustomTools] = useState<Tool[]>(() => {
     try {
@@ -69,6 +90,11 @@ export default function App() {
     localStorage.setItem("user_view_mode", viewMode);
   }, [viewMode]);
 
+  // Sync language selection to localStorage
+  useEffect(() => {
+    localStorage.setItem("user_lang", language);
+  }, [language]);
+
   // Sync custom tools to localStorage
   useEffect(() => {
     localStorage.setItem("user_custom_tools", JSON.stringify(customTools));
@@ -83,6 +109,17 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("user_tool_clicks", JSON.stringify(clicks));
   }, [clicks]);
+
+  // Admin Logout action
+  const handleLogoutAdmin = () => {
+    setIsAdmin(false);
+    try {
+      localStorage.removeItem("admin_session");
+    } catch (e) {}
+  };
+
+  // Get active translation dictionary
+  const t = translations[language] || translations["en"];
 
   // Handle adding custom tool
   const handleAddTool = (newTool: UserCustomTool) => {
@@ -195,6 +232,23 @@ export default function App() {
     return (b.clicks || 0) - (a.clicks || 0);
   });
 
+  // Localized helper to get Category Title with custom emoji
+  const getCategoryBannerTitle = () => {
+    switch (activeCategory) {
+      case "all": return `✨ ${t.categoryAll}`;
+      case "favorites": return `⭐ ${t.categoryFav}`;
+      case "utility": return `🧳 ${t.categoryUtility}`;
+      case "ai": return `🤖 ${t.categoryAi}`;
+      case "dev": return `💻 ${t.categoryDev}`;
+      case "design": return `🎨 ${t.categoryDesign}`;
+      case "productivity": return `📝 ${t.categoryProductivity}`;
+      case "other": return `🔍 ${t.categoryOther}`;
+      default: return `✨ ${t.categoryAll}`;
+    }
+  };
+
+  const isChinese = language === "zh_cn" || language === "zh_tw";
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
       {/* Bento Layout Wrapper */}
@@ -210,6 +264,11 @@ export default function App() {
           customCount={customTools.length}
           selectedTag={selectedTag}
           setSelectedTag={setSelectedTag}
+          language={language}
+          setLanguage={setLanguage}
+          isAdmin={isAdmin}
+          onLogoutAdmin={handleLogoutAdmin}
+          t={t}
         />
 
         {/* Main Workspace Layout */}
@@ -226,6 +285,7 @@ export default function App() {
             getCategoryCount={getCategoryCount}
             isOpen={isSidebarOpen}
             setIsOpen={setIsSidebarOpen}
+            t={t}
           />
 
           {/* Right main grid viewport */}
@@ -258,17 +318,17 @@ export default function App() {
                     <div className="flex flex-wrap items-center gap-3 p-4 bg-indigo-50/50 border border-indigo-100/50 rounded-2xl animate-fade-in">
                       <div className="flex items-center gap-2 text-xs font-extrabold text-indigo-900">
                         <LucideIcons.Filter className="w-4 h-4 text-indigo-600" />
-                        <span>正在应用过滤检索:</span>
+                        <span>{isChinese ? "正在应用过滤检索:" : "Applying active filters:"}</span>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
                         {selectedTag && (
                           <span className="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100">
-                            标签: #{selectedTag}
+                            {t.modalAddTags || "Tags"}: #{selectedTag}
                             <button
                               onClick={() => setSelectedTag("")}
                               className="hover:bg-indigo-700 p-0.5 rounded-full cursor-pointer transition-colors"
-                              title="清除标签"
+                              title={isChinese ? "清除标签" : "Clear tag"}
                             >
                               <LucideIcons.X className="w-3 h-3" />
                             </button>
@@ -277,11 +337,11 @@ export default function App() {
 
                         {searchQuery && (
                           <span className="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100">
-                            搜索: "{searchQuery}"
+                            {isChinese ? "搜索:" : "Search:"} "{searchQuery}"
                             <button
                               onClick={() => setSearchQuery("")}
                               className="hover:bg-indigo-700 p-0.5 rounded-full cursor-pointer transition-colors"
-                              title="清除搜索"
+                              title={isChinese ? "清除搜索" : "Clear search"}
                             >
                               <LucideIcons.X className="w-3 h-3" />
                             </button>
@@ -296,7 +356,7 @@ export default function App() {
                             }}
                             className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline ml-2 cursor-pointer transition-colors"
                           >
-                            重置所有
+                            {isChinese ? "重置所有" : "Reset All"}
                           </button>
                         )}
                       </div>
@@ -307,21 +367,14 @@ export default function App() {
                   <div className="p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-3xl text-white shadow-md shadow-indigo-100/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <h2 className="text-base font-bold flex items-center gap-2">
-                        {activeCategory === "all" && "✨ 发现优秀的 Web 工具与工作台"}
-                        {activeCategory === "favorites" && "⭐ 个人常用工具箱"}
-                        {activeCategory === "utility" && "🧳 本地免网口袋微工具"}
-                        {activeCategory === "ai" && "🤖 前沿 AI 大模型与智能创作生态"}
-                        {activeCategory === "dev" && "💻 开发者高并发效能实用目录"}
-                        {activeCategory === "design" && "🎨 视觉设计师视觉灵感与资源库"}
-                        {activeCategory === "productivity" && "📝 效率团队智能协同及学术工具"}
-                        {activeCategory === "other" && "🔍 实用网络工具与便民测试工具"}
+                        {getCategoryBannerTitle()}
                       </h2>
                       <p className="text-xs text-indigo-200/80">
-                        {categories.find((c) => c.id === activeCategory)?.description}
+                        {activeCategory === "all" ? t.brandSubtitle : (activeCategory === "favorites" ? t.myFavorites : categories.find((c) => c.id === activeCategory)?.description)}
                       </p>
                     </div>
                     <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-[10px] font-bold font-mono tracking-wider text-indigo-200">
-                      当前列表: {sortedTools.length} 项已过滤
+                      {isChinese ? "当前列表:" : "Active list:"} {sortedTools.length} {t.altText || "items"}
                     </span>
                   </div>
 
@@ -329,7 +382,7 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 bg-white border border-slate-200/50 p-4 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] select-none">
                     {/* View Switcher */}
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-400">视图布局:</span>
+                      <span className="text-xs font-bold text-slate-400">{t.viewLayout}:</span>
                       <div className="inline-flex bg-slate-100 p-1 rounded-2xl">
                         <button
                           onClick={() => setViewMode("table")}
@@ -340,7 +393,7 @@ export default function App() {
                           }`}
                         >
                           <LucideIcons.List className="w-3.5 h-3.5" />
-                          <span>数据表盘型</span>
+                          <span>{t.dataTable}</span>
                         </button>
                         <button
                           onClick={() => setViewMode("grid")}
@@ -351,14 +404,14 @@ export default function App() {
                           }`}
                         >
                           <LucideIcons.LayoutGrid className="w-3.5 h-3.5" />
-                          <span>精美卡片型</span>
+                          <span>{t.cardView}</span>
                         </button>
                       </div>
                     </div>
 
                     {/* Sort Selector */}
                     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-                      <span className="text-xs font-bold text-slate-400">排序指标:</span>
+                      <span className="text-xs font-bold text-slate-400">{t.sortIndicator}:</span>
                       <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto py-0.5">
                         <button
                           onClick={() => setSortBy("clicks")}
@@ -368,7 +421,7 @@ export default function App() {
                               : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
                           }`}
                         >
-                          🔥 点击热度
+                          🔥 {t.sortClicks}
                         </button>
                         <button
                           onClick={() => setSortBy("seoScore")}
@@ -378,7 +431,7 @@ export default function App() {
                               : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
                           }`}
                         >
-                          🎯 SEO 评分
+                          🎯 {t.sortSeo}
                         </button>
                         <button
                           onClick={() => setSortBy("monthlyVisits")}
@@ -388,7 +441,7 @@ export default function App() {
                               : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
                           }`}
                         >
-                          📈 流量规模
+                          📈 {t.sortTraffic}
                         </button>
                         <button
                           onClick={() => setSortBy("name")}
@@ -398,7 +451,7 @@ export default function App() {
                               : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
                           }`}
                         >
-                          🔤 字母排序
+                          🔤 {t.sortAlpha}
                         </button>
                       </div>
                     </div>
@@ -414,6 +467,7 @@ export default function App() {
                         onTagClick={(tag) => setSelectedTag(tag)}
                         onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
                         incrementClicks={handleIncrementClicks}
+                        t={t}
                       />
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -426,6 +480,7 @@ export default function App() {
                               onTagClick={(tag) => setSelectedTag(tag)}
                               onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
                               incrementClicks={handleIncrementClicks}
+                              t={t}
                             />
                           </div>
                         ))}
@@ -436,18 +491,20 @@ export default function App() {
                       <div className="p-4 bg-slate-50 text-slate-400 rounded-full mb-4">
                         <LucideIcons.SearchSlash className="w-10 h-10 text-slate-300" />
                       </div>
-                      <h3 className="font-extrabold text-slate-800 text-lg">没有找到匹配的工具</h3>
+                      <h3 className="font-extrabold text-slate-800 text-lg">
+                        {isChinese ? "没有找到匹配的工具" : "No matching tools found"}
+                      </h3>
                       <p className="text-sm text-slate-400 mt-2 leading-relaxed font-medium">
                         {activeCategory === "favorites"
-                          ? "您还没有收藏过任何工具！点击任意工具卡片右上角的星标即可收藏在此。"
-                          : "请尝试更改搜索词，或切换不同的分类查看。您也可以点击右上角添加自己的常用网站。"}
+                          ? (isChinese ? "您还没有收藏过任何工具！点击任意工具卡片右上角的星标即可收藏在此。" : "You haven't bookmarked any applications yet! Select the star on any card to add it here.")
+                          : (isChinese ? "请尝试更改搜索词，或切换不同的分类查看。您也可以点击右上角添加自己的常用网站。" : "Please try another search keyword, filter by another category, or add your customized tool.")}
                       </p>
                       {activeCategory === "favorites" ? (
                         <button
                           onClick={() => setActiveCategory("all")}
                           className="mt-6 px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
                         >
-                          浏览全部工具
+                          {isChinese ? "浏览全部工具" : "Browse All"}
                         </button>
                       ) : (
                         <div className="flex gap-3 mt-6">
@@ -458,13 +515,13 @@ export default function App() {
                             }}
                             className="px-4 py-2.5 text-xs font-bold border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
                           >
-                            清除当前过滤
+                            {isChinese ? "清除当前过滤" : "Clear Active Filters"}
                           </button>
                           <button
                             onClick={() => setIsAddModalOpen(true)}
                             className="px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
                           >
-                            收录新网站
+                            {t.submitTool}
                           </button>
                         </div>
                       )}
@@ -483,6 +540,9 @@ export default function App() {
         onClose={() => setIsAddModalOpen(false)}
         categories={categories}
         onAddTool={handleAddTool}
+        isAdmin={isAdmin}
+        setIsAdmin={setIsAdmin}
+        t={t}
       />
     </div>
   );

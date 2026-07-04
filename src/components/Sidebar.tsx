@@ -1,5 +1,7 @@
+import { useState } from "react";
 import * as LucideIcons from "lucide-react";
 import { Category } from "../types";
+import { TranslationDict } from "../lib/translations";
 
 interface SidebarProps {
   categories: Category[];
@@ -8,6 +10,7 @@ interface SidebarProps {
   getCategoryCount: (id: string) => number;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  t: TranslationDict;
 }
 
 export default function Sidebar({
@@ -17,10 +20,51 @@ export default function Sidebar({
   getCategoryCount,
   isOpen,
   setIsOpen,
+  t,
 }: SidebarProps) {
   // Common icons
   const X = LucideIcons.X;
   const Compass = LucideIcons.Compass;
+
+  // Toggle state for the hidden ad slot
+  const [isAdVisible, setIsAdVisible] = useState(() => {
+    try {
+      const stored = localStorage.getItem("user_ad_visible");
+      return stored === null ? true : stored === "true";
+    } catch {
+      return true;
+    }
+  });
+
+  const handleToggleAd = (visible: boolean) => {
+    setIsAdVisible(visible);
+    try {
+      localStorage.setItem("user_ad_visible", String(visible));
+    } catch (e) {}
+  };
+
+  const getCategoryName = (id: string, defaultName: string) => {
+    switch (id) {
+      case "all":
+        return t.categoryAll;
+      case "favorites":
+        return t.categoryFav;
+      case "utility":
+        return t.categoryUtility;
+      case "ai":
+        return t.categoryAi;
+      case "dev":
+        return t.categoryDev;
+      case "design":
+        return t.categoryDesign;
+      case "productivity":
+        return t.categoryProductivity;
+      case "other":
+        return t.categoryOther;
+      default:
+        return defaultName;
+    }
+  };
 
   return (
     <>
@@ -38,12 +82,12 @@ export default function Sidebar({
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto max-h-[75vh] pr-1 scrollbar-thin">
           {/* Mobile Header Title */}
           <div className="flex items-center justify-between lg:hidden border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
               <Compass className="w-5 h-5 text-indigo-600" />
-              <span className="font-bold text-slate-800">全部分类</span>
+              <span className="font-bold text-slate-800">{t.categoryAll}</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -54,8 +98,8 @@ export default function Sidebar({
           </div>
 
           <div>
-            <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block mb-3.5 pl-3">
-              工具分类目录
+            <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block mb-3 pl-3">
+              {languageHeaderLabel(t)}
             </span>
             <nav className="space-y-1.5">
               {categories.map((cat) => {
@@ -71,15 +115,15 @@ export default function Sidebar({
                       setActiveCategory(cat.id);
                       setIsOpen(false); // Close mobile menu if clicked
                     }}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl text-left text-sm font-semibold transition-all cursor-pointer group duration-200 ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-left text-xs font-bold transition-all cursor-pointer group duration-150 ${
                       isActive
                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <IconComponent
-                        className={`w-4.5 h-4.5 transition-transform group-hover:scale-110 ${
+                        className={`w-4 h-4 transition-transform group-hover:scale-110 shrink-0 ${
                           isActive
                             ? "text-white"
                             : cat.id === "favorites"
@@ -97,11 +141,11 @@ export default function Sidebar({
                             : "text-slate-400 group-hover:text-slate-700"
                         }`}
                       />
-                      <span>{cat.name}</span>
+                      <span className="truncate">{getCategoryName(cat.id, cat.name)}</span>
                     </div>
 
                     <span
-                      className={`text-[11px] px-2.5 py-0.5 rounded-lg font-mono font-bold transition-colors ${
+                      className={`text-[10px] px-2 py-0.5 rounded-lg font-mono font-bold transition-colors shrink-0 ${
                         isActive
                           ? "bg-indigo-700 text-indigo-100"
                           : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
@@ -116,16 +160,72 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* Brand footer inside sidebar */}
-        <div className="pt-4 border-t border-slate-100 text-center">
-          <p className="text-[11px] text-slate-400">
-            © 2026 工具导航. Powered by React 19
-          </p>
-          <p className="text-[9px] text-slate-300 mt-0.5 font-mono">
-            All data stored in your browser.
-          </p>
+        {/* Bottom portion: Sponsor + Brand Footer */}
+        <div className="mt-auto pt-4 border-t border-slate-100 space-y-4">
+          {/* Discreet Hidden Ad space */}
+          <div className="transition-all duration-300">
+            {isAdVisible ? (
+              <div className="p-3 bg-slate-50/80 border border-slate-200/50 rounded-2xl relative select-none animate-fade-in">
+                <button
+                  onClick={() => handleToggleAd(false)}
+                  className="absolute top-1 right-1 p-1 text-slate-300 hover:text-slate-500 hover:bg-slate-100/50 rounded-md transition-colors cursor-pointer"
+                  title={t.hideAd}
+                >
+                  <LucideIcons.EyeOff className="w-3 h-3" />
+                </button>
+                <div className="flex gap-2 items-start text-left">
+                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center text-white shrink-0 font-black text-[9px] select-none">
+                    AD
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[8px] font-black tracking-wider text-indigo-500 uppercase block leading-none">
+                      {t.adSponsor}
+                    </span>
+                    <h5 className="text-[10px] font-bold text-slate-800 mt-1 truncate leading-tight">
+                      {t.adTitle}
+                    </h5>
+                    <p className="text-[9px] text-slate-400 mt-0.5 leading-tight line-clamp-2">
+                      {t.adDesc}
+                    </p>
+                    <a
+                      href="https://supabase.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-indigo-600 hover:text-indigo-800 mt-1"
+                    >
+                      <span>{t.adAction}</span>
+                      <LucideIcons.ArrowUpRight className="w-2 h-2" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleToggleAd(true)}
+                className="w-full py-2 border border-dashed border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/10 text-[9px] font-extrabold text-slate-400 hover:text-indigo-600 rounded-xl cursor-pointer flex items-center justify-center gap-1 transition-all duration-200"
+              >
+                <LucideIcons.Eye className="w-3.5 h-3.5" />
+                <span>{t.showAd}</span>
+              </button>
+            )}
+          </div>
+
+          <div className="text-center">
+            <p className="text-[10px] text-slate-400 font-medium">
+              © 2026 DevTools. Powered by React 19
+            </p>
+            <p className="text-[9px] text-slate-300 mt-0.5 font-mono">
+              All data stored locally in your browser.
+            </p>
+          </div>
         </div>
       </aside>
     </>
   );
+}
+
+// Low level category divider header localization helper
+function languageHeaderLabel(t: TranslationDict): string {
+  // Translate "工具分类目录" / "CATEGORIES" based on some key or simple check
+  return t.colCategory.toUpperCase();
 }
