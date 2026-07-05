@@ -348,7 +348,7 @@ export default function ToolTable({
                 <div
                   key={tool.id}
                   onClick={() => handleRowClick(tool)}
-                  className="p-5 hover:bg-indigo-50/10 transition-colors cursor-pointer space-y-4"
+                  className="p-3.5 hover:bg-indigo-50/10 transition-colors cursor-pointer space-y-2.5"
                 >
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex items-center gap-3">
@@ -420,7 +420,7 @@ export default function ToolTable({
                         onClick={() => handleRowClick(tool)}
                         className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm"
                       >
-                        <span>{tool.isBuiltIn ? "Run" : "Visit"}</span>
+                        <span>{tool.isBuiltIn ? "Run" : "Run ↗"}</span>
                         <LucideIcons.ArrowUpRight className="w-3 h-3" />
                       </button>
                     </div>

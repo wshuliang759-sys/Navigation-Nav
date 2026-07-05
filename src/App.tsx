@@ -6,6 +6,7 @@ import { presetTools, categories } from "./data/presetTools";
 import { Tool, UserCustomTool } from "./types";
 import { Language, translations } from "./lib/translations";
 import { presetToolsTranslations } from "./lib/presetToolsTranslations";
+import { matchPinyin } from "./lib/pinyin";
 
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -151,7 +152,8 @@ export default function App() {
       const matchName = tool.name.toLowerCase().includes(q);
       const matchDesc = tool.description.toLowerCase().includes(q);
       const matchTags = tool.tags.some((t) => t.toLowerCase().includes(q));
-      return matchName || matchDesc || matchTags;
+      const matchPinyinName = matchPinyin(tool.name, q);
+      return matchName || matchDesc || matchTags || matchPinyinName;
     }
 
     return true;
@@ -171,6 +173,12 @@ export default function App() {
 
   // Sort tools dynamically based on selected sorting metric
   const sortedTools = [...filteredTools].sort((a, b) => {
+    // Put favorited (starred) items at the absolute top of the list
+    const aFav = favorites.includes(a.id);
+    const bFav = favorites.includes(b.id);
+    if (aFav && !bFav) return -1;
+    if (!aFav && bFav) return 1;
+
     // Put built-ins first in their category
     if (a.isBuiltIn && !b.isBuiltIn) return -1;
     if (!a.isBuiltIn && b.isBuiltIn) return 1;
@@ -233,7 +241,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
       {/* Bento Layout Wrapper */}
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-6 sm:py-6 flex flex-col gap-4 sm:gap-6">
         {/* Dynamic Header */}
         <Header
           searchQuery={searchQuery}
@@ -448,7 +456,7 @@ export default function App() {
                         t={t}
                       />
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
                         {sortedTools.map((tool) => (
                           <div key={tool.id} className="h-full">
                             <ToolCard
