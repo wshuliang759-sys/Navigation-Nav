@@ -215,7 +215,6 @@ export default function ToolTable({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hidden"
-                          onClick={(e) => e.stopPropagation()}
                         />
                       )}
                       <div className="flex items-start gap-3.5">
@@ -381,8 +380,7 @@ export default function ToolTable({
                             href={tool.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={() => {
                               incrementClicks(tool.id);
                             }}
                             className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 rounded-xl transition-all cursor-pointer inline-flex items-center justify-center"
@@ -420,7 +418,6 @@ export default function ToolTable({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hidden"
-                      onClick={(e) => e.stopPropagation()}
                     />
                   )}
                   <div className="flex justify-between items-start gap-4">
@@ -502,8 +499,7 @@ export default function ToolTable({
                           href={tool.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          onClick={(e) => {
-                            e.stopPropagation();
+                          onClick={() => {
                             incrementClicks(tool.id);
                           }}
                           className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm inline-flex justify-center"
