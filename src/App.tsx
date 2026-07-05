@@ -15,6 +15,25 @@ import ToolTable from "./components/ToolTable";
 import BuiltInTools from "./components/BuiltInTools";
 
 export default function App() {
+  // Theme state
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    try {
+      const stored = localStorage.getItem("user_theme");
+      if (stored === "dark" || stored === "light") return stored;
+      if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      }
+      return "light";
+    } catch {
+      return "light";
+    }
+  });
+
+  // Toggle Theme helper
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
   // State: selected active language (defaulting to English "en")
   const [language, setLanguage] = useState<Language>(() => {
     try {
@@ -84,6 +103,21 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("user_tool_clicks", JSON.stringify(clicks));
   }, [clicks]);
+
+  // Sync theme to document class list and localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("user_theme", theme);
+    } catch {
+      // ignore
+    }
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [theme]);
 
   // Get active translation dictionary
   const t = translations[language] || translations["en"];
@@ -239,7 +273,7 @@ export default function App() {
   const isChinese = language === "zh_cn" || language === "zh_tw";
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex flex-col font-sans selection:bg-indigo-100 dark:selection:bg-indigo-900/60 selection:text-indigo-900 dark:selection:text-indigo-250 transition-colors duration-300">
       {/* Bento Layout Wrapper */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-6 sm:py-6 flex flex-col gap-4 sm:gap-6">
         {/* Dynamic Header */}
@@ -254,6 +288,8 @@ export default function App() {
           language={language}
           setLanguage={setLanguage}
           t={t}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
         />
 
         {/* Main Workspace Layout */}
@@ -301,19 +337,19 @@ export default function App() {
                 >
                   {/* Active Filter Indicators */}
                   {(selectedTag || searchQuery) && (
-                    <div className="flex flex-wrap items-center gap-3 p-4 bg-indigo-50/50 border border-indigo-100/50 rounded-2xl animate-fade-in">
-                      <div className="flex items-center gap-2 text-xs font-extrabold text-indigo-900">
-                        <LucideIcons.Filter className="w-4 h-4 text-indigo-600" />
+                    <div className="flex flex-wrap items-center gap-3 p-4 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/30 rounded-2xl animate-fade-in">
+                      <div className="flex items-center gap-2 text-xs font-extrabold text-indigo-900 dark:text-indigo-400">
+                        <LucideIcons.Filter className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                         <span>{isChinese ? "正在应用过滤检索:" : "Applying active filters:"}</span>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
                         {selectedTag && (
-                          <span className="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100">
+                          <span className="px-3 py-1 bg-indigo-600 dark:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100 dark:shadow-none">
                             {t.modalAddTags || "Tags"}: #{selectedTag}
                             <button
                               onClick={() => setSelectedTag("")}
-                              className="hover:bg-indigo-700 p-0.5 rounded-full cursor-pointer transition-colors"
+                              className="hover:bg-indigo-700 dark:hover:bg-indigo-600 p-0.5 rounded-full cursor-pointer transition-colors"
                               title={isChinese ? "清除标签" : "Clear tag"}
                             >
                               <LucideIcons.X className="w-3 h-3" />
@@ -322,11 +358,11 @@ export default function App() {
                         )}
 
                         {searchQuery && (
-                          <span className="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100">
+                          <span className="px-3 py-1 bg-indigo-600 dark:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-100 dark:shadow-none">
                             {isChinese ? "搜索:" : "Search:"} "{searchQuery}"
                             <button
                               onClick={() => setSearchQuery("")}
-                              className="hover:bg-indigo-700 p-0.5 rounded-full cursor-pointer transition-colors"
+                              className="hover:bg-indigo-700 dark:hover:bg-indigo-600 p-0.5 rounded-full cursor-pointer transition-colors"
                               title={isChinese ? "清除搜索" : "Clear search"}
                             >
                               <LucideIcons.X className="w-3 h-3" />
@@ -340,7 +376,7 @@ export default function App() {
                               setSelectedTag("");
                               setSearchQuery("");
                             }}
-                            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline ml-2 cursor-pointer transition-colors"
+                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline ml-2 cursor-pointer transition-colors"
                           >
                             {isChinese ? "重置所有" : "Reset All"}
                           </button>
@@ -350,7 +386,7 @@ export default function App() {
                   )}
 
                   {/* Dashboard Category Description Banner */}
-                  <div className="p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-3xl text-white shadow-md shadow-indigo-100/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 dark:border-slate-850 rounded-3xl text-white shadow-md shadow-indigo-100/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <h2 className="text-base font-bold flex items-center gap-2">
                         {getCategoryBannerTitle()}
@@ -365,17 +401,17 @@ export default function App() {
                   </div>
 
                   {/* Layout & Sorting Control Bar */}
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 bg-white border border-slate-200/50 p-4 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] select-none">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/80 p-4 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.01)] dark:shadow-none select-none animate-fade-in">
                     {/* View Switcher */}
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-400">{t.viewLayout}:</span>
-                      <div className="inline-flex bg-slate-100 p-1 rounded-2xl">
+                      <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{t.viewLayout}:</span>
+                      <div className="inline-flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
                         <button
                           onClick={() => setViewMode("table")}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                             viewMode === "table"
-                              ? "bg-white text-indigo-600 shadow-sm"
-                              : "text-slate-500 hover:text-slate-800"
+                              ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                              : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                           }`}
                         >
                           <LucideIcons.List className="w-3.5 h-3.5" />
@@ -385,8 +421,8 @@ export default function App() {
                           onClick={() => setViewMode("grid")}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                             viewMode === "grid"
-                              ? "bg-white text-indigo-600 shadow-sm"
-                              : "text-slate-500 hover:text-slate-800"
+                              ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                              : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                           }`}
                         >
                           <LucideIcons.LayoutGrid className="w-3.5 h-3.5" />
@@ -397,47 +433,51 @@ export default function App() {
 
                     {/* Sort Selector */}
                     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-                      <span className="text-xs font-bold text-slate-400">{t.sortIndicator}:</span>
+                      <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{t.sortIndicator}:</span>
                       <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto py-0.5">
                         <button
                           onClick={() => setSortBy("clicks")}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer border flex items-center gap-1.5 ${
                             sortBy === "clicks"
-                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                              ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-sm"
+                              : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                           }`}
                         >
-                          🔥 {t.sortClicks}
+                          <LucideIcons.Flame className={`w-3.5 h-3.5 ${sortBy === 'clicks' ? 'text-indigo-600 animate-pulse' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <span>{t.sortClicks.replace(/^[🔥🎯📈🔤\s]+/, "").trim()}</span>
                         </button>
                         <button
                           onClick={() => setSortBy("seoScore")}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer border flex items-center gap-1.5 ${
                             sortBy === "seoScore"
-                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                              ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-sm"
+                              : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                           }`}
                         >
-                          🎯 {t.sortSeo}
+                          <LucideIcons.Target className={`w-3.5 h-3.5 ${sortBy === 'seoScore' ? 'text-indigo-600' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <span>{t.sortSeo.replace(/^[🔥🎯📈🔤\s]+/, "").trim()}</span>
                         </button>
                         <button
                           onClick={() => setSortBy("monthlyVisits")}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer border flex items-center gap-1.5 ${
                             sortBy === "monthlyVisits"
-                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                              ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-sm"
+                              : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                           }`}
                         >
-                          📈 {t.sortTraffic}
+                          <LucideIcons.TrendingUp className={`w-3.5 h-3.5 ${sortBy === 'monthlyVisits' ? 'text-indigo-600' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <span>{t.sortTraffic.replace(/^[🔥🎯📈🔤\s]+/, "").trim()}</span>
                         </button>
                         <button
                           onClick={() => setSortBy("name")}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer border flex items-center gap-1.5 ${
                             sortBy === "name"
-                              ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                              : "bg-white border-slate-250 hover:bg-slate-50 text-slate-600"
+                              ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-sm"
+                              : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                           }`}
                         >
-                          🔤 {t.sortAlpha}
+                          <LucideIcons.ArrowUpDown className={`w-3.5 h-3.5 ${sortBy === 'name' ? 'text-indigo-600' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <span>{t.sortAlpha.replace(/^[🔥🎯📈🔤\s]+/, "").trim()}</span>
                         </button>
                       </div>
                     </div>
@@ -454,6 +494,7 @@ export default function App() {
                         onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
                         incrementClicks={handleIncrementClicks}
                         t={t}
+                        language={language}
                       />
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
@@ -467,20 +508,21 @@ export default function App() {
                               onSelectBuiltIn={(key) => setActiveBuiltInKey(key)}
                               incrementClicks={handleIncrementClicks}
                               t={t}
+                              language={language}
                             />
                           </div>
                         ))}
                       </div>
                     )
                   ) : (
-                    <div className="text-center py-20 bg-white border border-slate-200/60 rounded-3xl p-6 flex flex-col items-center justify-center max-w-lg mx-auto shadow-sm">
-                      <div className="p-4 bg-slate-50 text-slate-400 rounded-full mb-4">
-                        <LucideIcons.SearchSlash className="w-10 h-10 text-slate-300" />
+                    <div className="text-center py-20 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col items-center justify-center max-w-lg mx-auto shadow-sm dark:shadow-none animate-fade-in">
+                      <div className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-full mb-4">
+                        <LucideIcons.SearchSlash className="w-10 h-10 text-slate-300 dark:text-slate-650" />
                       </div>
-                      <h3 className="font-extrabold text-slate-800 text-lg">
+                      <h3 className="font-extrabold text-slate-800 dark:text-slate-200 text-lg">
                         {isChinese ? "没有找到匹配的工具" : "No matching tools found"}
                       </h3>
-                      <p className="text-sm text-slate-400 mt-2 leading-relaxed font-medium">
+                      <p className="text-sm text-slate-400 dark:text-slate-500 mt-2 leading-relaxed font-medium">
                         {activeCategory === "favorites"
                           ? (isChinese ? "您还没有收藏过任何工具！点击任意工具卡片右上角的星标即可收藏在此。" : "You haven't bookmarked any applications yet! Select the star on any card to add it here.")
                           : (isChinese ? "请尝试更改搜索词，或切换不同的分类查看。您也可以点击右上角添加自己的常用网站。" : "Please try another search keyword, filter by another category, or add your customized tool.")}
@@ -488,7 +530,7 @@ export default function App() {
                       {activeCategory === "favorites" ? (
                         <button
                           onClick={() => setActiveCategory("all")}
-                          className="mt-6 px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
+                          className="mt-6 px-4 py-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-750 dark:hover:bg-indigo-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
                         >
                           {isChinese ? "浏览全部工具" : "Browse All"}
                         </button>
@@ -499,7 +541,7 @@ export default function App() {
                               setSearchQuery("");
                               setSelectedTag("");
                             }}
-                            className="px-4 py-2.5 text-xs font-bold border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                            className="px-4 py-2.5 text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl transition-colors cursor-pointer"
                           >
                             {isChinese ? "清除当前过滤" : "Clear Active Filters"}
                           </button>
@@ -515,9 +557,9 @@ export default function App() {
       </div>
 
       {/* Global Page Footer */}
-      <footer className="w-full border-t border-slate-200/50 bg-white py-6 mt-12">
+      <footer className="w-full border-t border-slate-200/50 dark:border-slate-800/60 bg-white dark:bg-slate-900/90 py-6 mt-12 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-400 font-medium select-none">
+          <p className="text-xs text-slate-400 dark:text-slate-500 font-medium select-none">
             © 2026 {t.brandTitle || "DevTools"}. {isChinese ? "保留所有权利。" : "All rights reserved."}
           </p>
 
@@ -525,9 +567,9 @@ export default function App() {
             href="https://forms.google.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700 font-extrabold text-xs rounded-2xl border border-indigo-100/30 hover:border-indigo-200 transition-all cursor-pointer shadow-sm shadow-indigo-100/10 hover:shadow-indigo-150/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-extrabold text-xs rounded-2xl border border-indigo-100/30 dark:border-indigo-900/50 hover:border-indigo-200 dark:hover:border-indigo-750 transition-all cursor-pointer shadow-sm shadow-indigo-100/10 hover:shadow-indigo-150/20"
           >
-            <LucideIcons.MessageSquare className="w-4 h-4 text-indigo-500" />
+            <LucideIcons.MessageSquare className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
             <span>提交工具或报错机制</span>
           </a>
         </div>

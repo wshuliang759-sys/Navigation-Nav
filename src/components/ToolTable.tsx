@@ -1,7 +1,7 @@
 import { useState, useId, MouseEvent } from "react";
 import * as LucideIcons from "lucide-react";
 import { Tool } from "../types";
-import { TranslationDict } from "../lib/translations";
+import { TranslationDict, Language } from "../lib/translations";
 
 interface ToolTableProps {
   tools: Tool[];
@@ -11,6 +11,7 @@ interface ToolTableProps {
   onSelectBuiltIn: (key: string) => void;
   incrementClicks: (id: string) => void;
   t: TranslationDict;
+  language?: Language;
 }
 
 export default function ToolTable({
@@ -21,9 +22,12 @@ export default function ToolTable({
   onSelectBuiltIn,
   incrementClicks,
   t,
+  language = "en",
 }: ToolTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const tableId = useId();
+
+  const isZh = language === "zh_cn" || language === "zh_tw";
 
   // Helper to parse visits to number for analytics calculation
   const parseVisitsToNumber = (visits?: string): number => {
@@ -35,6 +39,41 @@ export default function ToolTable({
     if (visits.endsWith("M")) return val * 1000000;
     if (visits.endsWith("K")) return val * 1000;
     return val;
+  };
+
+  const formatVisitsNumber = (num: number, isZhLang: boolean): string => {
+    if (num <= 0) return "Local";
+    if (isZhLang) {
+      if (num >= 100000000) { // 1亿
+        const yi = num / 100000000;
+        return `${yi % 1 === 0 ? yi.toFixed(0) : yi.toFixed(1)}亿`;
+      }
+      if (num >= 10000) { // 1万
+        const wan = num / 10000;
+        return `${wan % 1 === 0 ? wan.toFixed(0) : wan.toFixed(1)}万`;
+      }
+      return `${num}`;
+    } else {
+      if (num >= 1000000000) {
+        const b = num / 1000000000;
+        return `${b % 1 === 0 ? b.toFixed(0) : b.toFixed(1)}B`;
+      }
+      if (num >= 1000000) {
+        const m = num / 1000000;
+        return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`;
+      }
+      if (num >= 1000) {
+        return `${Math.round(num / 1000)}K`;
+      }
+      return `${num}`;
+    }
+  };
+
+  const formatVisitsStr = (visits?: string): string => {
+    if (!visits) return "Local";
+    if (visits === "本地免流" || visits === "免流" || visits === "Local") return "Local";
+    const num = parseVisitsToNumber(visits);
+    return formatVisitsNumber(num, isZh);
   };
 
   const handleCopyLink = (e: MouseEvent, id: string, url: string) => {
@@ -61,14 +100,7 @@ export default function ToolTable({
 
   // Total Traffic
   const totalVisitsNum = tools.reduce((acc, t) => acc + parseVisitsToNumber(t.seoTraffic?.monthlyVisits), 0);
-
-  const totalVisitsStr = totalVisitsNum >= 1000000000 
-    ? `${(totalVisitsNum / 1000000000).toFixed(1)}B` 
-    : totalVisitsNum >= 1000000 
-    ? `${(totalVisitsNum / 1000000).toFixed(1)}M` 
-    : totalVisitsNum > 0 
-    ? `${Math.round(totalVisitsNum / 1000)}K` 
-    : "Local";
+  const totalVisitsFormatted = formatVisitsNumber(totalVisitsNum, isZh);
 
   // Find tool with maximum visits
   const maxTrafficTool = [...tools].sort((a, b) => {
@@ -79,52 +111,52 @@ export default function ToolTable({
     <div className="space-y-6 animate-fade-in">
       {/* 🚀 SEO & Traffic Intelligence Widget Dashboard */}
       {tools.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 bg-gradient-to-br from-indigo-900/10 via-slate-50 to-indigo-900/5 border border-indigo-150/40 rounded-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 bg-gradient-to-br from-indigo-900/10 via-slate-50 to-indigo-900/5 dark:from-indigo-950/20 dark:via-slate-900/30 dark:to-indigo-950/10 border border-indigo-150/40 dark:border-slate-800/80 rounded-3xl">
           <div className="flex items-center gap-3.5">
-            <div className="p-3 bg-indigo-100 text-indigo-700 rounded-2xl">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-400 text-indigo-700 rounded-2xl">
               <LucideIcons.TrendingUp className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+              <p className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 {t.estMonthlyTraffic}
               </p>
-              <h4 className="text-xl font-black text-slate-800 tracking-tight mt-0.5">
-                {totalVisitsStr === "Local" ? "100% Offline Local" : `~ ${totalVisitsStr}`}
+              <h4 className="text-xl font-black text-slate-800 dark:text-slate-200 tracking-tight mt-0.5">
+                {totalVisitsFormatted === "Local" ? "100% Offline Local" : `~${totalVisitsFormatted}`}
               </h4>
             </div>
           </div>
 
           <div className="flex items-center gap-3.5">
-            <div className="p-3 bg-emerald-100 text-emerald-700 rounded-2xl">
+            <div className="p-3 bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400 text-emerald-700 rounded-2xl">
               <LucideIcons.ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+              <p className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 {t.avgSeoScore}
               </p>
               <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-xl font-black text-slate-800 tracking-tight">
+                <span className="text-xl font-black text-slate-800 dark:text-slate-200 tracking-tight">
                   {avgSeoScore || "100"}
                 </span>
-                <span className="text-xs font-bold text-emerald-600">/ 100 XP</span>
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">/ 100 XP</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3.5">
-            <div className="p-3 bg-amber-100 text-amber-700 rounded-2xl">
+            <div className="p-3 bg-amber-100 dark:bg-amber-950 dark:text-amber-400 text-amber-700 rounded-2xl">
               <LucideIcons.Crown className="w-5 h-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+              <p className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 {t.categoryLeader}
               </p>
-              <p className="text-sm font-extrabold text-slate-800 mt-0.5 truncate">
+              <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200 mt-0.5 truncate">
                 {maxTrafficTool ? maxTrafficTool.name : "N/A"}
               </p>
               {maxTrafficTool && maxTrafficTool.seoTraffic && (
-                <p className="text-[10px] text-amber-600 font-bold font-mono">
-                  Visits: ~ {maxTrafficTool.seoTraffic.monthlyVisits} (SEO {maxTrafficTool.seoTraffic.seoScore})
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold font-mono">
+                  Visits: ~{formatVisitsStr(maxTrafficTool.seoTraffic.monthlyVisits)} (SEO {maxTrafficTool.seoTraffic.seoScore})
                 </p>
               )}
             </div>
@@ -133,12 +165,12 @@ export default function ToolTable({
       )}
 
       {/* 📊 Data Grid Layout container (Slick high density list) */}
-      <div className="bg-white border border-slate-200/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.01)]">
+      <div className="bg-white dark:bg-slate-900/90 border border-slate-200/50 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.01)] dark:shadow-none">
         <div className="overflow-x-auto">
           {/* Table view for MD and UP */}
           <table className="w-full text-left border-collapse min-w-[800px] hidden md:table">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-black uppercase tracking-wider text-slate-400 select-none">
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850/60 text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 select-none">
                 <th className="py-4 px-6 w-[280px]">{t.colName}</th>
                 <th className="py-4 px-4 w-[120px]">{t.colCategory}</th>
                 <th className="py-4 px-4 w-[160px]">{t.colSeo}</th>
@@ -147,7 +179,7 @@ export default function ToolTable({
                 <th className="py-4 px-6 w-[140px] text-right">{t.colAction}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100/60">
+            <tbody className="divide-y divide-slate-100/60 dark:divide-slate-800/50">
               {tools.map((tool) => {
                 const isFavorited = favorites.includes(tool.id);
                 const ToolIcon = (LucideIcons as any)[tool.icon] || LucideIcons.Globe;
@@ -156,46 +188,46 @@ export default function ToolTable({
                 // Color score classes
                 const score = tool.seoTraffic?.seoScore || 100;
                 const scoreColor = score >= 95 
-                  ? "text-emerald-600 bg-emerald-50 border-emerald-100" 
+                  ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30" 
                   : score >= 90 
-                  ? "text-blue-600 bg-blue-50 border-blue-100" 
-                  : "text-amber-600 bg-amber-50 border-amber-100";
+                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900/30" 
+                  : "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/30";
 
                 return (
                   <tr
                     key={tool.id}
                     onClick={() => handleRowClick(tool)}
-                    className="hover:bg-indigo-50/20 group transition-colors cursor-pointer text-slate-700"
+                    className="hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 group transition-colors cursor-pointer text-slate-700 dark:text-slate-300"
                   >
                     {/* Name & description */}
                     <td className="py-3 px-6 vertical-align-middle">
                       <div className="flex items-start gap-3.5">
                         <div className={`p-2.5 rounded-xl border mt-0.5 transition-colors ${
                           tool.isBuiltIn 
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-100/50" 
+                            ? "bg-emerald-50 text-emerald-600 border-emerald-100/50 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30" 
                             : tool.isCustom 
-                            ? "bg-violet-50 text-violet-600 border-violet-100/50" 
-                            : "bg-slate-50 text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-600 border-slate-100/50"
+                            ? "bg-violet-50 text-violet-600 border-violet-100/50 dark:bg-violet-950/20 dark:text-violet-400 dark:border-violet-900/30" 
+                            : "bg-slate-50 text-slate-500 border-slate-100/50 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-800 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100/40 dark:group-hover:bg-indigo-950/30 dark:group-hover:text-indigo-400 dark:group-hover:border-indigo-900/30"
                         }`}>
                           <ToolIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-extrabold text-[13.5px] text-slate-800 group-hover:text-indigo-600 transition-colors">
+                            <span className="font-extrabold text-[13.5px] text-slate-800 dark:text-slate-250 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                               {tool.name}
                             </span>
                             {tool.isBuiltIn && (
-                              <span className="px-1.5 py-0.5 text-[8px] font-black bg-emerald-100 border border-emerald-200 text-emerald-800 rounded">
+                              <span className="px-1.5 py-0.5 text-[8px] font-black bg-emerald-100 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-400 rounded">
                                 {t.builtInBadge}
                               </span>
                             )}
                             {tool.isCustom && (
-                              <span className="px-1.5 py-0.5 text-[8px] font-black bg-violet-100 border border-violet-200 text-violet-800 rounded">
+                              <span className="px-1.5 py-0.5 text-[8px] font-black bg-violet-100 dark:bg-violet-950 border border-violet-200 dark:border-violet-900 text-violet-800 dark:text-violet-400 rounded">
                                 {t.customBadge}
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] text-slate-400 font-medium leading-relaxed line-clamp-2 max-w-[240px]">
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed line-clamp-2 max-w-[240px]">
                             {tool.description}
                           </p>
                           {/* Tags */}
@@ -207,7 +239,7 @@ export default function ToolTable({
                                   e.stopPropagation();
                                   onTagClick(tag);
                                 }}
-                                className="px-1.5 py-0.2 bg-slate-50 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 text-[9px] font-bold rounded-md border border-slate-100 transition-colors"
+                                className="px-1.5 py-0.2 bg-slate-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-950 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[9px] font-bold rounded-md border border-slate-100 dark:border-slate-800 transition-colors"
                               >
                                 #{tag}
                               </button>
@@ -219,7 +251,8 @@ export default function ToolTable({
 
                     {/* Category */}
                     <td className="py-3 px-4 text-xs font-bold text-slate-500 vertical-align-middle">
-                      <span className="px-2 py-1 bg-slate-100 rounded-lg text-[10px] text-slate-600 select-none border border-slate-150">
+                      <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[10px] text-slate-600 dark:text-slate-300 select-none border border-slate-150 dark:border-slate-750">
+                        {tool.category === "all" && t.categoryAll}
                         {tool.category === "ai" && t.categoryAi}
                         {tool.category === "dev" && t.categoryDev}
                         {tool.category === "design" && t.categoryDesign}
@@ -233,21 +266,21 @@ export default function ToolTable({
                     <td className="py-3 px-4 vertical-align-middle text-[11px]">
                       <div className="space-y-1 font-semibold">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-slate-400">SEO:</span>
+                          <span className="text-slate-400 dark:text-slate-500">SEO:</span>
                           <span className={`px-1.5 py-0.2 font-black text-[9px] border rounded ${scoreColor}`}>
                             {score}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-slate-500">
-                          <span className="text-slate-400">Visits:</span>
-                          <span className="font-mono font-bold text-slate-700 bg-slate-50 px-1 rounded">
-                            {tool.seoTraffic?.monthlyVisits || "Local"}
+                          <span className="text-slate-400 dark:text-slate-500">Visits:</span>
+                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 px-1 rounded">
+                            {formatVisitsStr(tool.seoTraffic?.monthlyVisits)}
                           </span>
                         </div>
                         {tool.seoTraffic?.rank && (
                           <div className="flex items-center gap-1.5 text-slate-500">
-                            <span className="text-slate-400">Rank:</span>
-                            <span className="font-mono text-slate-500">#{tool.seoTraffic.rank}</span>
+                            <span className="text-slate-400 dark:text-slate-500">Rank:</span>
+                            <span className="font-mono text-slate-500 dark:text-slate-400">#{tool.seoTraffic.rank}</span>
                           </div>
                         )}
                       </div>
@@ -257,7 +290,7 @@ export default function ToolTable({
                     <td className="py-3 px-4 vertical-align-middle text-xs">
                       {tool.alternatives && tool.alternatives.length > 0 ? (
                         <div className="flex flex-col gap-1">
-                          <span className="text-[10px] text-slate-400 font-bold select-none">{t.colAlternatives}:</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold select-none">{t.colAlternatives}:</span>
                           <div className="flex flex-wrap gap-1.5">
                             {tool.alternatives.map((alt, idx) => (
                               <a
@@ -266,7 +299,7 @@ export default function ToolTable({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100/80 hover:bg-indigo-50 border border-slate-200/50 hover:border-indigo-100 rounded text-[10px] font-bold text-slate-600 hover:text-indigo-600 transition-all shadow-sm"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950 border border-slate-200/50 dark:border-slate-750 rounded text-[10px] font-bold text-slate-600 dark:text-slate-350 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm"
                               >
                                 <span>{alt.name}</span>
                                 <LucideIcons.ExternalLink className="w-2.5 h-2.5" />
@@ -275,13 +308,13 @@ export default function ToolTable({
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-slate-300 font-medium italic">{t.noAlternatives}</span>
+                        <span className="text-[10px] text-slate-300 dark:text-slate-600 font-medium italic">{t.noAlternatives}</span>
                       )}
                     </td>
 
                     {/* Popularity/clicks */}
                     <td className="py-3 px-4 text-center vertical-align-middle">
-                      <span className="font-mono font-extrabold text-[11px] text-indigo-600 bg-indigo-50/50 border border-indigo-100 px-2 py-0.5 rounded-lg select-none">
+                      <span className="font-mono font-extrabold text-[11px] text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/20 px-2 py-0.5 rounded-lg select-none">
                         {tool.clicks || 0}
                       </span>
                     </td>
@@ -292,7 +325,7 @@ export default function ToolTable({
                         {/* Favorite */}
                         <button
                           onClick={() => onToggleFavorite(tool.id)}
-                          className="p-2 hover:bg-slate-50 text-slate-300 hover:text-amber-500 rounded-xl transition-colors cursor-pointer"
+                          className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-300 dark:text-slate-600 hover:text-amber-500 dark:hover:text-amber-400 rounded-xl transition-colors cursor-pointer"
                           title="Favorite"
                         >
                           <LucideIcons.Star
@@ -306,7 +339,7 @@ export default function ToolTable({
                         {!tool.isBuiltIn && (
                           <button
                             onClick={(e) => handleCopyLink(e, tool.id, tool.url)}
-                            className="p-2 hover:bg-slate-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-200"
+                            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-750"
                             title="Copy Link"
                           >
                             {isCopied ? (
@@ -320,7 +353,7 @@ export default function ToolTable({
                         {/* Direct Button */}
                         <button
                           onClick={() => handleRowClick(tool)}
-                          className="p-2 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 rounded-xl transition-all cursor-pointer"
+                          className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 rounded-xl transition-all cursor-pointer"
                           title={tool.isBuiltIn ? "Run" : "Visit"}
                         >
                           {tool.isBuiltIn ? (
@@ -338,7 +371,7 @@ export default function ToolTable({
           </table>
 
           {/* Fallback Grid Row layout on small screens (mobile view) */}
-          <div className="md:hidden divide-y divide-slate-100">
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
             {tools.map((tool) => {
               const isFavorited = favorites.includes(tool.id);
               const ToolIcon = (LucideIcons as any)[tool.icon] || LucideIcons.Globe;
@@ -348,19 +381,19 @@ export default function ToolTable({
                 <div
                   key={tool.id}
                   onClick={() => handleRowClick(tool)}
-                  className="p-3.5 hover:bg-indigo-50/10 transition-colors cursor-pointer space-y-2.5"
+                  className="p-3.5 hover:bg-indigo-50/10 dark:hover:bg-slate-800/20 transition-colors cursor-pointer space-y-2.5"
                 >
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-xl ${
-                        tool.isBuiltIn ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600"
+                        tool.isBuiltIn ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400" : "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/30 dark:text-indigo-400"
                       }`}>
                         <ToolIcon className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="font-extrabold text-sm text-slate-800">{tool.name}</h4>
-                        <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border">
-                          {tool.seoTraffic?.monthlyVisits === "本地免流" || tool.seoTraffic?.monthlyVisits === "免流" ? "Local" : `Visits: ${tool.seoTraffic?.monthlyVisits}`}
+                        <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-200">{tool.name}</h4>
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-850 px-1.5 py-0.5 rounded border dark:border-slate-800">
+                          {tool.seoTraffic?.monthlyVisits === "本地免流" || tool.seoTraffic?.monthlyVisits === "免流" ? "Local" : `Visits: ~${formatVisitsStr(tool.seoTraffic?.monthlyVisits)}`}
                         </span>
                       </div>
                     </div>
@@ -370,7 +403,7 @@ export default function ToolTable({
                         e.stopPropagation();
                         onToggleFavorite(tool.id);
                       }}
-                      className="p-1 hover:bg-slate-50 text-slate-300 hover:text-amber-500 rounded-lg transition-colors cursor-pointer"
+                      className="p-1 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-300 dark:text-slate-600 hover:text-amber-500 dark:hover:text-amber-450 rounded-lg transition-colors cursor-pointer"
                     >
                       <LucideIcons.Star
                         className={`w-4 h-4 ${isFavorited ? "fill-amber-400 text-amber-500" : ""}`}
@@ -378,12 +411,12 @@ export default function ToolTable({
                     </button>
                   </div>
 
-                  <p className="text-xs text-slate-500 leading-relaxed font-medium">{tool.description}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{tool.description}</p>
 
                   {/* Alternatives */}
                   {tool.alternatives && tool.alternatives.length > 0 && (
                     <div className="space-y-1">
-                      <p className="text-[10px] text-slate-400 font-extrabold">{t.colAlternatives}:</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-extrabold">{t.colAlternatives}:</p>
                       <div className="flex flex-wrap gap-1.5">
                         {tool.alternatives.map((alt, idx) => (
                           <a
@@ -392,7 +425,7 @@ export default function ToolTable({
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 hover:bg-indigo-50 border border-slate-200/50 rounded text-[9px] font-bold text-slate-600"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950 border border-slate-200/50 dark:border-slate-700 rounded text-[9px] font-bold text-slate-600 dark:text-slate-300"
                           >
                             <span>{alt.name}</span>
                             <LucideIcons.ExternalLink className="w-2 h-2" />
@@ -402,8 +435,8 @@ export default function ToolTable({
                     </div>
                   )}
 
-                  <div className="flex justify-between items-center border-t border-slate-100 pt-3">
-                    <span className="text-[10px] font-mono text-slate-400 bg-slate-150 px-2 py-0.5 rounded">
+                  <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-850 pt-3">
+                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-slate-150 dark:bg-slate-800 px-2 py-0.5 rounded">
                       SEO Score: {tool.seoTraffic?.seoScore || 100} / 100
                     </span>
 
