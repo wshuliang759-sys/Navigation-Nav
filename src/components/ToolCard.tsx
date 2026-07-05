@@ -89,20 +89,36 @@ export default function ToolCard({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = (e: MouseEvent) => {
     incrementClicks(tool.id);
     if (tool.isBuiltIn && tool.builtInKey) {
+      e.preventDefault();
       onSelectBuiltIn(tool.builtInKey);
-    } else {
-      window.open(tool.url, "_blank", "noopener,noreferrer");
     }
   };
 
   return (
     <div
-      onClick={handleCardClick}
-      className="group relative bg-white dark:bg-slate-900/90 border border-slate-200/50 dark:border-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-[0_2px_12px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.025)] dark:shadow-none transition-all duration-300 flex items-center gap-3 w-full cursor-pointer hover:scale-[1.01] hover:-translate-y-0.5 select-none h-full"
+      className="group relative bg-white dark:bg-slate-900/90 border border-slate-200/50 dark:border-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-[0_2px_12px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.025)] dark:shadow-none transition-all duration-300 flex items-center gap-3 w-full hover:scale-[1.01] hover:-translate-y-0.5 select-none h-full"
     >
+      {/* Native Link Overlay for seamless, blocker-free navigation inside iframe sandboxes */}
+      {tool.isBuiltIn ? (
+        <button
+          onClick={handleCardClick}
+          className="absolute inset-0 z-10 rounded-2xl cursor-pointer w-full h-full border-none bg-transparent"
+          aria-label={tool.name}
+        />
+      ) : (
+        <a
+          href={tool.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleCardClick}
+          className="absolute inset-0 z-10 rounded-2xl cursor-pointer w-full h-full"
+          aria-label={tool.name}
+        />
+      )}
+
       {/* Flat Layout Left Side: Mini-Icon container with hover animation */}
       <div
         className={`p-2 rounded-xl border shrink-0 transition-all duration-300 ${
@@ -138,7 +154,7 @@ export default function ToolCard({
           </div>
 
           {/* Quick inline controls: Fav and Copy */}
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="flex items-center gap-0.5 shrink-0 relative z-20">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -179,7 +195,7 @@ export default function ToolCard({
         <div className="flex items-center justify-between gap-2 mt-auto">
           
           {/* Tags on the left side */}
-          <div className="flex items-center gap-1.5 overflow-hidden">
+          <div className="flex items-center gap-1.5 overflow-hidden relative z-20">
             {tool.tags.slice(0, 2).map((tag) => (
               <button
                 key={tag}

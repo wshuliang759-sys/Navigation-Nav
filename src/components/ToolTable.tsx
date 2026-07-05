@@ -1,4 +1,4 @@
-import { useState, useId, MouseEvent } from "react";
+import { useState, useId, MouseEvent, useRef } from "react";
 import * as LucideIcons from "lucide-react";
 import { Tool } from "../types";
 import { TranslationDict, Language } from "../lib/translations";
@@ -26,6 +26,7 @@ export default function ToolTable({
 }: ToolTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const tableId = useId();
+  const rowLinks = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   const isZh = language === "zh_cn" || language === "zh_tw";
 
@@ -88,7 +89,12 @@ export default function ToolTable({
     if (tool.isBuiltIn && tool.builtInKey) {
       onSelectBuiltIn(tool.builtInKey);
     } else {
-      window.open(tool.url, "_blank", "noopener,noreferrer");
+      const linkEl = rowLinks.current[`mobile-${tool.id}`] || rowLinks.current[tool.id];
+      if (linkEl) {
+        linkEl.click();
+      } else {
+        window.open(tool.url, "_blank", "noopener,noreferrer");
+      }
     }
   };
 
@@ -201,6 +207,17 @@ export default function ToolTable({
                   >
                     {/* Name & description */}
                     <td className="py-3 px-6 vertical-align-middle">
+                      {/* Hidden anchor tag for programmatic native click */}
+                      {!tool.isBuiltIn && (
+                        <a
+                          ref={(el) => { rowLinks.current[tool.id] = el; }}
+                          href={tool.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hidden"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
                       <div className="flex items-start gap-3.5">
                         <div className={`p-2.5 rounded-xl border mt-0.5 transition-colors ${
                           tool.isBuiltIn 
@@ -351,17 +368,29 @@ export default function ToolTable({
                         )}
 
                         {/* Direct Button */}
-                        <button
-                          onClick={() => handleRowClick(tool)}
-                          className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 rounded-xl transition-all cursor-pointer"
-                          title={tool.isBuiltIn ? "Run" : "Visit"}
-                        >
-                          {tool.isBuiltIn ? (
+                        {tool.isBuiltIn ? (
+                          <button
+                            onClick={() => handleRowClick(tool)}
+                            className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 rounded-xl transition-all cursor-pointer"
+                            title="Run"
+                          >
                             <LucideIcons.Play className="w-3.5 h-3.5" />
-                          ) : (
+                          </button>
+                        ) : (
+                          <a
+                            href={tool.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              incrementClicks(tool.id);
+                            }}
+                            className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 rounded-xl transition-all cursor-pointer inline-flex items-center justify-center"
+                            title="Visit"
+                          >
                             <LucideIcons.ArrowUpRight className="w-3.5 h-3.5" />
-                          )}
-                        </button>
+                          </a>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -383,6 +412,17 @@ export default function ToolTable({
                   onClick={() => handleRowClick(tool)}
                   className="p-3.5 hover:bg-indigo-50/10 dark:hover:bg-slate-800/20 transition-colors cursor-pointer space-y-2.5"
                 >
+                  {/* Hidden anchor tag for programmatic native click on mobile */}
+                  {!tool.isBuiltIn && (
+                    <a
+                      ref={(el) => { rowLinks.current[`mobile-${tool.id}`] = el; }}
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hidden"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  )}
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-xl ${
@@ -449,13 +489,29 @@ export default function ToolTable({
                           {isCopied ? <LucideIcons.Check className="w-3.5 h-3.5 text-emerald-600" /> : <LucideIcons.Copy className="w-3.5 h-3.5" />}
                         </button>
                       )}
-                      <button
-                        onClick={() => handleRowClick(tool)}
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm"
-                      >
-                        <span>{tool.isBuiltIn ? "Run" : "Run ↗"}</span>
-                        <LucideIcons.ArrowUpRight className="w-3 h-3" />
-                      </button>
+                      {tool.isBuiltIn ? (
+                        <button
+                          onClick={() => handleRowClick(tool)}
+                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm"
+                        >
+                          <span>Run</span>
+                          <LucideIcons.ArrowUpRight className="w-3 h-3" />
+                        </button>
+                      ) : (
+                        <a
+                          href={tool.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            incrementClicks(tool.id);
+                          }}
+                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm inline-flex justify-center"
+                        >
+                          <span>Run ↗</span>
+                          <LucideIcons.ArrowUpRight className="w-3 h-3" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
