@@ -26,7 +26,6 @@ export default function ToolTable({
 }: ToolTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const tableId = useId();
-  const rowLinks = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   const isZh = language === "zh_cn" || language === "zh_tw";
 
@@ -82,20 +81,6 @@ export default function ToolTable({
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  const handleRowClick = (tool: Tool) => {
-    incrementClicks(tool.id);
-    if (tool.isBuiltIn && tool.builtInKey) {
-      onSelectBuiltIn(tool.builtInKey);
-    } else {
-      const linkEl = rowLinks.current[`mobile-${tool.id}`] || rowLinks.current[tool.id];
-      if (linkEl) {
-        linkEl.click();
-      } else {
-        window.open(tool.url, "_blank", "noopener,noreferrer");
-      }
-    }
   };
 
   // Calculate SEO Traffic Analytics for the currently filtered tools
@@ -202,66 +187,83 @@ export default function ToolTable({
                 return (
                   <tr
                     key={tool.id}
-                    onClick={() => handleRowClick(tool)}
-                    className="hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 group transition-colors cursor-pointer text-slate-700 dark:text-slate-300"
+                    className="hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 group transition-colors text-slate-700 dark:text-slate-300"
                   >
                     {/* Name & description */}
                     <td className="py-3 px-6 vertical-align-middle">
-                      {/* Hidden anchor tag for programmatic native click */}
-                      {!tool.isBuiltIn && (
-                        <a
-                          ref={(el) => { rowLinks.current[tool.id] = el; }}
-                          href={tool.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hidden"
-                        />
-                      )}
-                      <div className="flex items-start gap-3.5">
-                        <div className={`p-2.5 rounded-xl border mt-0.5 transition-colors ${
-                          tool.isBuiltIn 
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-100/50 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30" 
-                            : tool.isCustom 
-                            ? "bg-violet-50 text-violet-600 border-violet-100/50 dark:bg-violet-950/20 dark:text-violet-400 dark:border-violet-900/30" 
-                            : "bg-slate-50 text-slate-500 border-slate-100/50 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-800 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100/40 dark:group-hover:bg-indigo-950/30 dark:group-hover:text-indigo-400 dark:group-hover:border-indigo-900/30"
-                        }`}>
-                          <ToolIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-extrabold text-[13.5px] text-slate-800 dark:text-slate-250 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                              {tool.name}
-                            </span>
-                            {tool.isBuiltIn && (
+                      {tool.isBuiltIn ? (
+                        <button
+                          onClick={() => {
+                            incrementClicks(tool.id);
+                            if (tool.builtInKey) onSelectBuiltIn(tool.builtInKey);
+                          }}
+                          className="flex items-start gap-3.5 text-left w-full h-full cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+                        >
+                          <div className="p-2.5 rounded-xl border mt-0.5 transition-colors bg-emerald-50 text-emerald-600 border-emerald-100/50 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
+                            <ToolIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-extrabold text-[13.5px] text-slate-800 dark:text-slate-250 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                {tool.name}
+                              </span>
                               <span className="px-1.5 py-0.5 text-[8px] font-black bg-emerald-100 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-400 rounded">
                                 {t.builtInBadge}
                               </span>
-                            )}
-                            {tool.isCustom && (
-                              <span className="px-1.5 py-0.5 text-[8px] font-black bg-violet-100 dark:bg-violet-950 border border-violet-200 dark:border-violet-900 text-violet-800 dark:text-violet-400 rounded">
-                                {t.customBadge}
+                            </div>
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed line-clamp-2 max-w-[240px]">
+                              {tool.description}
+                            </p>
+                          </div>
+                        </button>
+                      ) : (
+                        <a
+                          href={tool.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => incrementClicks(tool.id)}
+                          className="flex items-start gap-3.5 text-left w-full h-full cursor-pointer"
+                        >
+                          <div className={`p-2.5 rounded-xl border mt-0.5 transition-colors ${
+                            tool.isCustom 
+                              ? "bg-violet-50 text-violet-600 border-violet-100/50 dark:bg-violet-950/20 dark:text-violet-400 dark:border-violet-900/30" 
+                              : "bg-slate-50 text-slate-500 border-slate-100/50 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-800 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100/40 dark:group-hover:bg-indigo-950/30 dark:group-hover:text-indigo-400 dark:group-hover:border-indigo-900/30"
+                          }`}>
+                            <ToolIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-extrabold text-[13.5px] text-slate-800 dark:text-slate-250 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                {tool.name}
                               </span>
-                            )}
+                              {tool.isCustom && (
+                                <span className="px-1.5 py-0.5 text-[8px] font-black bg-violet-100 dark:bg-violet-950 border border-violet-200 dark:border-violet-900 text-violet-800 dark:text-violet-400 rounded">
+                                  {t.customBadge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed line-clamp-2 max-w-[240px]">
+                              {tool.description}
+                            </p>
                           </div>
-                          <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed line-clamp-2 max-w-[240px]">
-                            {tool.description}
-                          </p>
-                          {/* Tags */}
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {tool.tags.slice(0, 2).map((tag) => (
-                              <button
-                                key={tag}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onTagClick(tag);
-                                }}
-                                className="px-1.5 py-0.2 bg-slate-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-950 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[9px] font-bold rounded-md border border-slate-100 dark:border-slate-800 transition-colors"
-                              >
-                                #{tag}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+                        </a>
+                      )}
+                      
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mt-2 pl-[46px]">
+                        {tool.tags.slice(0, 2).map((tag) => (
+                          <button
+                            key={tag}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onTagClick(tag);
+                            }}
+                            className="px-1.5 py-0.2 bg-slate-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-950 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[9px] font-bold rounded-md border border-slate-100 dark:border-slate-800 transition-colors cursor-pointer relative z-20"
+                          >
+                            #{tag}
+                          </button>
+                        ))}
                       </div>
                     </td>
 
@@ -337,10 +339,14 @@ export default function ToolTable({
 
                     {/* Action buttons */}
                     <td className="py-3 px-6 text-right vertical-align-middle">
-                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-2">
                         {/* Favorite */}
                         <button
-                          onClick={() => onToggleFavorite(tool.id)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onToggleFavorite(tool.id);
+                          }}
                           className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-300 dark:text-slate-600 hover:text-amber-500 dark:hover:text-amber-400 rounded-xl transition-colors cursor-pointer"
                           title="Favorite"
                         >
@@ -369,7 +375,12 @@ export default function ToolTable({
                         {/* Direct Button */}
                         {tool.isBuiltIn ? (
                           <button
-                            onClick={() => handleRowClick(tool)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              incrementClicks(tool.id);
+                              if (tool.builtInKey) onSelectBuiltIn(tool.builtInKey);
+                            }}
                             className="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white hover:border-indigo-600 dark:hover:border-indigo-600 rounded-xl transition-all cursor-pointer"
                             title="Run"
                           >
@@ -407,40 +418,54 @@ export default function ToolTable({
               return (
                 <div
                   key={tool.id}
-                  onClick={() => handleRowClick(tool)}
-                  className="p-3.5 hover:bg-indigo-50/10 dark:hover:bg-slate-800/20 transition-colors cursor-pointer space-y-2.5"
+                  className="p-3.5 hover:bg-indigo-50/10 dark:hover:bg-slate-800/20 transition-colors space-y-2.5"
                 >
-                  {/* Hidden anchor tag for programmatic native click on mobile */}
-                  {!tool.isBuiltIn && (
-                    <a
-                      ref={(el) => { rowLinks.current[`mobile-${tool.id}`] = el; }}
-                      href={tool.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hidden"
-                    />
-                  )}
                   <div className="flex justify-between items-start gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl ${
-                        tool.isBuiltIn ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400" : "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/30 dark:text-indigo-400"
-                      }`}>
-                        <ToolIcon className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-200">{tool.name}</h4>
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-850 px-1.5 py-0.5 rounded border dark:border-slate-800">
-                          {tool.seoTraffic?.monthlyVisits === "本地免流" || tool.seoTraffic?.monthlyVisits === "免流" ? "Local" : `Visits: ~${formatVisitsStr(tool.seoTraffic?.monthlyVisits)}`}
-                        </span>
-                      </div>
-                    </div>
+                    {tool.isBuiltIn ? (
+                      <button
+                        onClick={() => {
+                          incrementClicks(tool.id);
+                          if (tool.builtInKey) onSelectBuiltIn(tool.builtInKey);
+                        }}
+                        className="flex items-center gap-3 text-left cursor-pointer bg-transparent border-none p-0 focus:outline-none flex-1"
+                      >
+                        <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 shrink-0">
+                          <ToolIcon className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-200 truncate">{tool.name}</h4>
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-850 px-1.5 py-0.5 rounded border dark:border-slate-800">
+                            {t.builtInBadge}
+                          </span>
+                        </div>
+                      </button>
+                    ) : (
+                      <a
+                        href={tool.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => incrementClicks(tool.id)}
+                        className="flex items-center gap-3 text-left cursor-pointer flex-1"
+                      >
+                        <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/30 dark:text-indigo-400 shrink-0">
+                          <ToolIcon className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-200 truncate">{tool.name}</h4>
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-850 px-1.5 py-0.5 rounded border dark:border-slate-800">
+                            {tool.seoTraffic?.monthlyVisits === "本地免流" || tool.seoTraffic?.monthlyVisits === "免流" ? "Local" : `Visits: ~${formatVisitsStr(tool.seoTraffic?.monthlyVisits)}`}
+                          </span>
+                        </div>
+                      </a>
+                    )}
 
                     <button
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         onToggleFavorite(tool.id);
                       }}
-                      className="p-1 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-300 dark:text-slate-600 hover:text-amber-500 dark:hover:text-amber-450 rounded-lg transition-colors cursor-pointer"
+                      className="p-1 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-300 dark:text-slate-600 hover:text-amber-500 dark:hover:text-amber-450 rounded-lg transition-colors cursor-pointer shrink-0"
                     >
                       <LucideIcons.Star
                         className={`w-4 h-4 ${isFavorited ? "fill-amber-400 text-amber-500" : ""}`}
@@ -477,7 +502,7 @@ export default function ToolTable({
                       SEO Score: {tool.seoTraffic?.seoScore || 100} / 100
                     </span>
 
-                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-2">
                       {!tool.isBuiltIn && (
                         <button
                           onClick={(e) => handleCopyLink(e, tool.id, tool.url)}
@@ -488,8 +513,11 @@ export default function ToolTable({
                       )}
                       {tool.isBuiltIn ? (
                         <button
-                          onClick={() => handleRowClick(tool)}
-                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm"
+                          onClick={() => {
+                            incrementClicks(tool.id);
+                            if (tool.builtInKey) onSelectBuiltIn(tool.builtInKey);
+                          }}
+                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm cursor-pointer"
                         >
                           <span>Run</span>
                           <LucideIcons.ArrowUpRight className="w-3 h-3" />
@@ -502,7 +530,7 @@ export default function ToolTable({
                           onClick={() => {
                             incrementClicks(tool.id);
                           }}
-                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm inline-flex justify-center"
+                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm inline-flex justify-center cursor-pointer"
                         >
                           <span>Run ↗</span>
                           <LucideIcons.ArrowUpRight className="w-3 h-3" />

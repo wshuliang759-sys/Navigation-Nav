@@ -1732,5 +1732,715 @@ export const presetTools: Tool[] = [
       { name: "Notion Enterprise", url: "https://www.notion.so/" }
     ],
     seoTraffic: { rank: 24000, monthlyVisits: "0.4M", seoScore: 88 }
+  },
+  // ==================== 50 Extra Curated Tools ====================
+  // AI Tools (10)
+  {
+    id: "extra-ai-genspark",
+    name: "Genspark AI 搜索",
+    description: "生成式 AI 搜索引擎，自动为您想要搜索的任意主题实时编写一个定制的、汇总全面的综合页面。",
+    url: "https://www.genspark.ai/",
+    category: "ai",
+    tags: ["AI搜索", "学术汇总", "深度整理", "提效"],
+    icon: "Search",
+    alternatives: [
+      { name: "Perplexity AI", url: "https://www.perplexity.ai/" },
+      { name: "Phind AI", url: "https://www.phind.com/" }
+    ],
+    seoTraffic: { rank: 3500, monthlyVisits: "5.1M", seoScore: 92 }
+  },
+  {
+    id: "extra-ai-poe",
+    name: "Poe 聚合大模型",
+    description: "Quora 推出的多模型 AI 聊天客户端，汇聚了 GPT-4o, Claude 3.5, Gemini 1.5, Llama 3 并支持创建自己的机器人。",
+    url: "https://poe.com/",
+    category: "ai",
+    tags: ["多模型", "聚合客户端", "AI聊天", "Bot创建"],
+    icon: "MessageSquare",
+    alternatives: [
+      { name: "ChatGPT", url: "https://chatgpt.com/" },
+      { name: "Claude AI", url: "https://claude.ai/" }
+    ],
+    seoTraffic: { rank: 450, monthlyVisits: "42M", seoScore: 95 }
+  },
+  {
+    id: "extra-ai-groq",
+    name: "Groq 极致推理 API",
+    description: "拥有世界上最高效极速的推理专用 LPU 芯片，让 Llama 3, Mixtral 等模型实现每秒上百词的闪电响应时间。",
+    url: "https://groq.com/",
+    category: "ai",
+    tags: ["极速推理", "LPU芯片", "开源大模型", "API接入"],
+    icon: "Zap",
+    alternatives: [
+      { name: "Together AI", url: "https://www.together.ai/" },
+      { name: "Replicate", url: "https://replicate.com/" }
+    ],
+    seoTraffic: { rank: 1800, monthlyVisits: "8.5M", seoScore: 91 }
+  },
+  {
+    id: "extra-ai-chatpdf",
+    name: "ChatPDF 文档追问",
+    description: "支持一键上传超大 PDF 论文或合同，AI 会自动对其进行分段解析和核心内容提炼，支持极高精度的跨页追问与溯源。",
+    url: "https://www.chatpdf.com/",
+    category: "ai",
+    tags: ["PDF解析", "文档AI", "阅读助手", "学术神器"],
+    icon: "FileText",
+    alternatives: [
+      { name: "Kimi Chat", url: "https://kimi.moonshot.cn/" },
+      { name: "Humata AI", url: "https://www.humata.ai/" }
+    ],
+    seoTraffic: { rank: 2200, monthlyVisits: "7.2M", seoScore: 89 }
+  },
+  {
+    id: "extra-ai-did",
+    name: "D-ID 数字人视频",
+    description: "领先的 AI 虚拟主播与照片开口说话视频生成平台，支持自然配音与多国语言，广泛应用于宣传与在线教学。",
+    url: "https://www.d-id.com/",
+    category: "ai",
+    tags: ["数字人", "照片开口", "AI视频", "虚拟主播"],
+    icon: "Video",
+    alternatives: [
+      { name: "HeyGen", url: "https://www.heygen.com/" },
+      { name: "Synthesia", url: "https://www.synthesia.io/" }
+    ],
+    seoTraffic: { rank: 2900, monthlyVisits: "5.4M", seoScore: 90 }
+  },
+  {
+    id: "extra-ai-runway",
+    name: "Runway Gen-3 视频生成",
+    description: "好莱坞级别的高画质 AI 视频生成大模型，在光影连贯性、动作逼真度以及艺术创造力上堪称行业风向标。",
+    url: "https://runwayml.com/",
+    category: "ai",
+    tags: ["AI视频", "Runway", "Gen-3", "好莱坞质感"],
+    icon: "Film",
+    alternatives: [
+      { name: "Luma Dream Machine", url: "https://lumalabs.ai/dream-machine" },
+      { name: "Sora", url: "https://openai.com/sora" }
+    ],
+    seoTraffic: { rank: 1400, monthlyVisits: "11.2M", seoScore: 93 }
+  },
+  {
+    id: "extra-ai-kling",
+    name: "快手可灵 Kling AI",
+    description: "国内顶级 AI 视频生成模型，在模拟真实物理规律、光影关系和极其复杂的肢体动态方面达到国际一流水准。",
+    url: "https://klingai.com/",
+    category: "ai",
+    tags: ["国产顶级", "AI视频", "快手可灵", "物理规律模拟"],
+    icon: "Tv",
+    alternatives: [
+      { name: "Luma Dream Machine", url: "https://lumalabs.ai/dream-machine" },
+      { name: "Runway Gen-3", url: "https://runwayml.com/" }
+    ],
+    seoTraffic: { rank: 3800, monthlyVisits: "4.5M", seoScore: 89 }
+  },
+  {
+    id: "extra-ai-gamma",
+    name: "Gamma App 一键生成 PPT",
+    description: "颠覆性的幻灯片演示文稿与精美长文排版生成器，只需写下一句话描述，即可在 1 分钟内完成全套视觉排版与图片搭配。",
+    url: "https://gamma.app/",
+    category: "ai",
+    tags: ["AI生成PPT", "演示文稿", "排版利器", "创意图表"],
+    icon: "Layout",
+    alternatives: [
+      { name: "Tome", url: "https://tome.app/" },
+      { name: "Beautiful.ai", url: "https://www.beautiful.ai/" }
+    ],
+    seoTraffic: { rank: 1100, monthlyVisits: "14.8M", seoScore: 94 }
+  },
+  {
+    id: "extra-ai-copilot-workspace",
+    name: "GitHub Copilot Workspace",
+    description: "GitHub 官方推出的以自然语言为驱动的项目全局开发套件，支持在云端环境直接理解 Issue、设计架构和自动重构代码。",
+    url: "https://github.com/features/copilot-workspace",
+    category: "ai",
+    tags: ["GitHub", "AI编程", "Issue驱动", "全局编写"],
+    icon: "Cpu",
+    alternatives: [
+      { name: "Cursor AI", url: "https://www.cursor.com/" },
+      { name: "Replit", url: "https://replit.com/" }
+    ],
+    seoTraffic: { rank: 40, monthlyVisits: "2.1M", seoScore: 95 }
+  },
+  {
+    id: "extra-ai-deepseek-api",
+    name: "DeepSeek API 开放平台",
+    description: "深度求索官方的大模型 API 接入端，提供与国际一流水平比肩的极低报价，是国内开发者降本增效的核心首选。",
+    url: "https://platform.deepseek.com/",
+    category: "ai",
+    tags: ["DeepSeek", "API接入", "高性价比", "国产开源"],
+    icon: "Terminal",
+    alternatives: [
+      { name: "OpenAI Platform", url: "https://platform.openai.com/" },
+      { name: "SiliconFlow", url: "https://siliconflow.cn/" }
+    ],
+    seoTraffic: { rank: 2500, monthlyVisits: "6.2M", seoScore: 91 }
+  },
+
+  // Dev Tools (10)
+  {
+    id: "extra-dev-shadcn",
+    name: "Shadcn UI 组件库",
+    description: "当前在 React 领域最为火爆的组件设计范式，无需作为 npm 依赖安装，而是直接将无样式的 Accessible 组件代码复制或 CLI 注入到项目中。",
+    url: "https://ui.shadcn.com/",
+    category: "dev",
+    tags: ["Shadcn", "UI框架", "Tailwind", "Radix", "前端精品"],
+    icon: "LayoutGrid",
+    alternatives: [
+      { name: "MUI", url: "https://mui.com/" },
+      { name: "Ant Design", url: "https://ant.design/" }
+    ],
+    seoTraffic: { rank: 1100, monthlyVisits: "15M", seoScore: 96 }
+  },
+  {
+    id: "extra-dev-drizzle",
+    name: "Drizzle ORM",
+    description: "下一代轻量极速、类型安全的 TypeScript 关系型数据库 ORM 框架，完美兼容 Serverless、边缘计算以及传统 SQL 环境。",
+    url: "https://orm.drizzle.team/",
+    category: "dev",
+    tags: ["ORM", "TypeScript", "SQL", "Database", "Type-Safe"],
+    icon: "Database",
+    alternatives: [
+      { name: "Prisma", url: "https://www.prisma.io/" },
+      { name: "TypeORM", url: "https://typeorm.io/" }
+    ],
+    seoTraffic: { rank: 4100, monthlyVisits: "3.2M", seoScore: 93 }
+  },
+  {
+    id: "extra-dev-jsonhero",
+    name: "JSON Hero 华丽可视化",
+    description: "令人惊艳的在线 JSON 可视化调试器，支持搜索、多重列视图显示、色彩编码标记以及超大嵌套结构分析。",
+    url: "https://jsonhero.io/",
+    category: "dev",
+    tags: ["JSON调试", "可视化", "前端开发", "高颜值"],
+    icon: "Eye",
+    alternatives: [
+      { name: "JSON Crack", url: "https://jsoncrack.com/" },
+      { name: "内置JSON工具", url: "#builtin-json" }
+    ],
+    seoTraffic: { rank: 18000, monthlyVisits: "0.5M", seoScore: 88 }
+  },
+  {
+    id: "extra-dev-cf-workers",
+    name: "Cloudflare Workers 边缘计算",
+    description: "部署在 Cloudflare 全球数百个数据中心边缘节点的 Serverless JavaScript/WASM 极速计算托管环境。",
+    url: "https://workers.cloudflare.com/",
+    category: "dev",
+    tags: ["Cloudflare", "Workers", "Serverless", "边缘计算", "免费托管"],
+    icon: "Cloud",
+    alternatives: [
+      { name: "Vercel Functions", url: "https://vercel.com/features/serverless-functions" },
+      { name: "Netlify Functions", url: "https://www.netlify.com/platform/services/functions/" }
+    ],
+    seoTraffic: { rank: 180, monthlyVisits: "8.1M", seoScore: 97 }
+  },
+  {
+    id: "extra-dev-nginx-config",
+    name: "NGINX Config 在线配置生成",
+    description: "DigitalOcean 提供的在线配置工具，直观、可视、免错生成 NGINX 虚拟主机、反向代理、SSL 证书及安全强化参数代码。",
+    url: "https://www.digitalocean.com/community/tools/nginx",
+    category: "dev",
+    tags: ["NGINX", "服务器运维", "配置生成", "SSL配置", "反向代理"],
+    icon: "Cpu",
+    alternatives: [
+      { name: "Mozilla SSL Generator", url: "https://ssl-config.mozilla.org/" },
+      { name: "Nginx Helper", url: "https://nginx.org/" }
+    ],
+    seoTraffic: { rank: 350, monthlyVisits: "2.5M", seoScore: 95 }
+  },
+  {
+    id: "extra-dev-github-actions",
+    name: "GitHub Actions 速查表",
+    description: "直观便捷地检索 GitHub Actions 自动化工作流 CI/CD 中常用的配置文件格式、全局环境变量、调度时区语法及优秀开源模板。",
+    url: "https://github.com/features/actions",
+    category: "dev",
+    tags: ["CI/CD", "自动化工作流", "GitHub", "配置文件速查"],
+    icon: "GitBranch",
+    alternatives: [
+      { name: "GitLab CI docs", url: "https://docs.gitlab.com/ee/ci/" },
+      { name: "Travis CI", url: "https://www.travis-ci.com/" }
+    ],
+    seoTraffic: { rank: 40, monthlyVisits: "4.8M", seoScore: 96 }
+  },
+  {
+    id: "extra-dev-localtunnel",
+    name: "Localtunnel 本地内网穿透",
+    description: "无需繁杂配置，仅需一行 NPM 命令即可极速将本地 localhost 开发端口一键暴露到公网，极速用于微信、Webhooks 开发联调。",
+    url: "https://theboroer.github.io/localtunnel-www/",
+    category: "dev",
+    tags: ["内网穿透", "微信开发", "本地调试", "公网映射"],
+    icon: "Radio",
+    alternatives: [
+      { name: "Ngrok", url: "https://ngrok.com/" },
+      { name: "cpolar", url: "https://www.cpolar.com/" }
+    ],
+    seoTraffic: { rank: 25000, monthlyVisits: "0.3M", seoScore: 84 }
+  },
+  {
+    id: "extra-dev-postgres-sandbox",
+    name: "Postgres Playground 沙盒",
+    description: "无需安装庞大的 Postgres SQL 实例，网页端沙盒提供开箱即用的关系型数据库终端，用于执行复杂的 SQL、表关联实验与逻辑演算。",
+    url: "https://www.postgresql.org/",
+    category: "dev",
+    tags: ["PostgreSQL", "数据库沙盒", "SQL练习", "网页运行"],
+    icon: "Database",
+    alternatives: [
+      { name: "SQLite Viewer", url: "https://sqliteviewer.app/" },
+      { name: "SQL Fiddle", url: "http://sqlfiddle.com/" }
+    ],
+    seoTraffic: { rank: 950, monthlyVisits: "1.2M", seoScore: 92 }
+  },
+  {
+    id: "extra-dev-so-search",
+    name: "StackOverflow 精准检索",
+    description: "通过剔除网页杂乱推广、提供特定标签加乘、结合 AI 语法分析的大脑型 StackOverflow 技术排雷辅助站。",
+    url: "https://stackoverflow.com/",
+    category: "dev",
+    tags: ["报错查找", "精准检索", "开发提效", "排错辅助"],
+    icon: "HelpCircle",
+    alternatives: [
+      { name: "Phind AI", url: "https://www.phind.com/" },
+      { name: "Devv.ai", url: "https://devv.ai/" }
+    ],
+    seoTraffic: { rank: 150, monthlyVisits: "15M", seoScore: 97 }
+  },
+  {
+    id: "extra-dev-deno",
+    name: "Deno 下一代运行时",
+    description: "由 Node.js 创始人开发的现代化、极其安全、原生完美支持 TypeScript 与 ESM 模块规范的高性能后端 JavaScript 运行时平台。",
+    url: "https://deno.com/",
+    category: "dev",
+    tags: ["Deno", "TypeScript", "JavaScript运行时", "ESM", "安全"],
+    icon: "Terminal",
+    alternatives: [
+      { name: "Node.js", url: "https://nodejs.org/" },
+      { name: "Bun.sh", url: "https://bun.sh/" }
+    ],
+    seoTraffic: { rank: 8200, monthlyVisits: "1.8M", seoScore: 91 }
+  },
+
+  // Design Tools (10)
+  {
+    id: "extra-design-framer",
+    name: "Framer 视觉建站神器",
+    description: "业界无代码设计导向建站平台的扛鼎之作，支持直接拖拽设计，一键发布附带顶尖流畅 React 三维/二维动效的完美自适应网站。",
+    url: "https://www.framer.com/",
+    category: "design",
+    tags: ["视觉无代码", "React动效", "极速建站", "网页设计"],
+    icon: "Layers",
+    alternatives: [
+      { name: "Webflow", url: "https://webflow.com/" },
+      { name: "WordPress", url: "https://wordpress.org/" }
+    ],
+    seoTraffic: { rank: 2100, monthlyVisits: "8.2M", seoScore: 95 }
+  },
+  {
+    id: "extra-design-spline",
+    name: "Spline 3D 交互设计",
+    description: "彻底颠覆三维建站门槛的网页端 3D 在线设计协同平台，支持轻松制作、物理模拟并导出直接嵌入 React 或网页的精美 3D 图形动效。",
+    url: "https://spline.design/",
+    category: "design",
+    tags: ["3D设计", "交互动效", "WebGL", "网页特效"],
+    icon: "Rotate3d",
+    alternatives: [
+      { name: "Blender (Desktop)", url: "https://www.blender.org/" },
+      { name: "Three.js Editor", url: "https://threejs.org/editor/" }
+    ],
+    seoTraffic: { rank: 6400, monthlyVisits: "2.5M", seoScore: 91 }
+  },
+  {
+    id: "extra-design-vecteezy",
+    name: "Vecteezy 免费矢量库",
+    description: "全球最顶尖的优质商业矢量底图、创意设计插画、无版权平面素材与精美背景免费下载站。",
+    url: "https://www.vecteezy.com/",
+    category: "design",
+    tags: ["矢量底图", "平面素材", "插画下载", "设计资源"],
+    icon: "Brush",
+    alternatives: [
+      { name: "Freepik", url: "https://www.freepik.com/" },
+      { name: "Flaticon", url: "https://www.flaticon.com/" }
+    ],
+    seoTraffic: { rank: 820, monthlyVisits: "24M", seoScore: 96 }
+  },
+  {
+    id: "extra-design-colorhunt",
+    name: "Color Hunt 精选配色",
+    description: "倍受独立设计师喜爱的、采用极简主义手工卡片精选和每日更新流行趋势的配色色彩灵感获取站。",
+    url: "https://colorhunt.co/",
+    category: "design",
+    tags: ["精美配色", "色卡碰撞", "设计配色", "极简卡片"],
+    icon: "Palette",
+    alternatives: [
+      { name: "Coolors", url: "https://coolors.co/" },
+      { name: "Adobe Color", url: "https://color.adobe.com/" }
+    ],
+    seoTraffic: { rank: 11000, monthlyVisits: "1.4M", seoScore: 89 }
+  },
+  {
+    id: "extra-design-squoosh",
+    name: "Squoosh 谷歌极致压缩",
+    description: "谷歌 Chrome 团队出品的纯本地极速编码与图像无损级高阶压缩工具，支持多种尖端 Web 格式对比与精细设置。",
+    url: "https://squoosh.app/",
+    category: "design",
+    tags: ["谷歌出品", "纯本地压缩", "图像格式转换", "WebP编码", "极速"],
+    icon: "Scissors",
+    alternatives: [
+      { name: "TinyPNG", url: "https://tinypng.com/" },
+      { name: "Compressor.io", url: "https://compressor.io/" }
+    ],
+    seoTraffic: { rank: 12000, monthlyVisits: "1.2M", seoScore: 91 }
+  },
+  {
+    id: "extra-design-lordicon",
+    name: "Lordicon 动感图标库",
+    description: "包含数千个高清晰度、支持通过 CSS 自定义渲染、带有极其精细点击/悬停交互触发效果的 Lottie 动感图标数据库。",
+    url: "https://lordicon.com/",
+    category: "design",
+    tags: ["动感图标", "Lottie交互", "GIF图标", "网页交互"],
+    icon: "Smile",
+    alternatives: [
+      { name: "LottieFiles", url: "https://lottiefiles.com/" },
+      { name: "Flaticon", url: "https://www.flaticon.com/" }
+    ],
+    seoTraffic: { rank: 18000, monthlyVisits: "0.6M", seoScore: 88 }
+  },
+  {
+    id: "extra-design-dafont",
+    name: "DaFont 海量艺术字体",
+    description: "英文字体免费下载领域当之无愧的常青树，拥有长达二十年沉淀的各种赛博朋克、像素风、手写体、哥特体下载与即时预览。",
+    url: "https://www.dafont.com/",
+    category: "design",
+    tags: ["英文字体", "艺术字形", "免费字体", "排版预览"],
+    icon: "Award",
+    alternatives: [
+      { name: "FontSpace", url: "https://www.fontspace.com/" },
+      { name: "Google Fonts", url: "https://fonts.google.com/" }
+    ],
+    seoTraffic: { rank: 620, monthlyVisits: "28M", seoScore: 97 }
+  },
+  {
+    id: "extra-design-css-gradient",
+    name: "CSS Gradient 渐变神器",
+    description: "直观度拉满的 CSS 线性渐变、径向渐变、噪点磨砂背景效果的在线编辑、对比及一键代码复制生成利器。",
+    url: "https://cssgradient.io/",
+    category: "design",
+    tags: ["CSS渐变", "背景特效", "前端美化", "色彩渐变"],
+    icon: "Paintbrush",
+    alternatives: [
+      { name: "Coolors Gradients", url: "https://coolors.co/gradients" },
+      { name: "UI Gradients", url: "https://uigradients.com/" }
+    ],
+    seoTraffic: { rank: 15000, monthlyVisits: "0.9M", seoScore: 90 }
+  },
+  {
+    id: "extra-design-shape-divider",
+    name: "Shape Divider 网页波浪线",
+    description: "专为网页 UI 界面设计的 SVG 极速边缘分割形状生成器，让您的网页模块过度充满流线波浪、崇山峻岭或不对称斜角设计感。",
+    url: "https://www.shapedivider.app/",
+    category: "design",
+    tags: ["网页过度", "SVG图形", "波浪线", "边缘分割", "高颜值"],
+    icon: "RotateCw",
+    alternatives: [
+      { name: "Get Waves", url: "https://getwaves.io/" },
+      { name: "Blobmaker", url: "https://www.blobmaker.app/" }
+    ],
+    seoTraffic: { rank: 32000, monthlyVisits: "0.3M", seoScore: 85 }
+  },
+  {
+    id: "extra-design-blobmaker",
+    name: "Blobmaker 矢量流动水滴",
+    description: "一键随机生成具有高级极简视觉设计感的、不规则流动感 SVG 矢量气泡、水滴与色块素材，完美融入现代 Web 潮流背景。",
+    url: "https://www.blobmaker.app/",
+    category: "design",
+    tags: ["流动气泡", "SVG背景", "网页插图", "矢量图形"],
+    icon: "CircleDot",
+    alternatives: [
+      { name: "Shape Divider", url: "https://www.shapedivider.app/" },
+      { name: "Squircley", url: "https://squircley.app/" }
+    ],
+    seoTraffic: { rank: 42000, monthlyVisits: "0.2M", seoScore: 83 }
+  },
+
+  // Productivity Tools (10)
+  {
+    id: "extra-prod-miro",
+    name: "Miro 跨国协同白板",
+    description: "全球统治级别的企业云端协作白板，支持超大规模团队在无限画布中进行头脑风暴、敏捷看板迭代与逻辑框图研讨。",
+    url: "https://miro.com/",
+    category: "productivity",
+    tags: ["云协同", "无限画布", "头脑风暴", "敏捷看板", "企业首选"],
+    icon: "Clipboard",
+    alternatives: [
+      { name: "Mural", url: "https://www.mural.co/" },
+      { name: "Excalidraw", url: "https://excalidraw.com/" }
+    ],
+    seoTraffic: { rank: 540, monthlyVisits: "38M", seoScore: 96 }
+  },
+  {
+    id: "extra-prod-airtable",
+    name: "Airtable 多维表数据库",
+    description: "无代码低代码届的里程碑级平台，将传统的协作电子表格与底层关系型数据库及丰富可视化看板和高度自动化深度融合。",
+    url: "https://www.airtable.com/",
+    category: "productivity",
+    tags: ["多维表格", "数据库", "无代码", "自动化流程"],
+    icon: "Grid",
+    alternatives: [
+      { name: "飞书多维表格", url: "https://www.feishu.cn/" },
+      { name: "Baserow", url: "https://baserow.io/" }
+    ],
+    seoTraffic: { rank: 620, monthlyVisits: "22M", seoScore: 95 }
+  },
+  {
+    id: "extra-prod-readwise",
+    name: "Readwise Reader 精读器",
+    description: "数字阅读时代终极的高亮、稍后阅读、RSS 订阅与学术 PDF 精细审读工作台，完美同步双向链接知识库生态。",
+    url: "https://readwise.io/read",
+    category: "productivity",
+    tags: ["稍后阅读", "高亮同步", "RSS精选", "深度阅读"],
+    icon: "BookOpen",
+    alternatives: [
+      { name: "Pocket", url: "https://getpocket.com/" },
+      { name: "Instapaper", url: "https://www.instapaper.com/" }
+    ],
+    seoTraffic: { rank: 9800, monthlyVisits: "1.5M", seoScore: 91 }
+  },
+  {
+    id: "extra-prod-heptabase",
+    name: "Heptabase 视觉卡片知识库",
+    description: "创新学术研究笔记系统，以“卡片盒”与“思维白板”融汇为基础，帮助学者、独立创作者梳理超复杂学术关系与文献架构。",
+    url: "https://heptabase.com/",
+    category: "productivity",
+    tags: ["视觉笔记", "卡片盒法", "双链知识库", "学术首选", "深度思考"],
+    icon: "Map",
+    alternatives: [
+      { name: "Obsidian", url: "https://obsidian.md/" },
+      { name: "Logseq", url: "https://logseq.com/" }
+    ],
+    seoTraffic: { rank: 24000, monthlyVisits: "0.5M", seoScore: 89 }
+  },
+  {
+    id: "extra-prod-clickup",
+    name: "ClickUp 多合一项目管理",
+    description: "多合一的企业级高速协同、任务委派、甘特图展示、团队文档归纳以及全面 KPI/OKR 跟踪展示工作台。",
+    url: "https://clickup.com/",
+    category: "productivity",
+    tags: ["项目协作", "多合一看板", "团队文档", "OKR跟踪"],
+    icon: "CheckCircle",
+    alternatives: [
+      { name: "Trello", url: "https://trello.com/" },
+      { name: "Asana", url: "https://asana.com/" }
+    ],
+    seoTraffic: { rank: 1100, monthlyVisits: "16M", seoScore: 94 }
+  },
+  {
+    id: "extra-prod-flowith",
+    name: "FloWith 智能思维画布",
+    description: "国产自然语言驱动的多分枝 AI 思思维画布，彻底超越单薄的对话框形式，在网格状画布中展现深度发散、生成与合并的高维逻辑体验。",
+    url: "https://flowith.io/",
+    category: "productivity",
+    tags: ["智能画布", "AI思维导图", "多分枝追问", "创新交互"],
+    icon: "Workflow",
+    alternatives: [
+      { name: "Perplexity AI", url: "https://www.perplexity.ai/" },
+      { name: "Coze", url: "https://coze.com/" }
+    ],
+    seoTraffic: { rank: 45000, monthlyVisits: "0.2M", seoScore: 82 }
+  },
+  {
+    id: "extra-prod-toby",
+    name: "Toby 标签页管理器",
+    description: "极速整理浏览器数十个杂乱标签页的革命性扩展程序，允许一键聚合、按主题分组命名、并极速分享给团队常用网址。",
+    url: "https://www.gettoby.com/",
+    category: "productivity",
+    tags: ["标签页管理", "网址聚合", "浏览器提效", "一键保存"],
+    icon: "Folder",
+    alternatives: [
+      { name: "Session Buddy", url: "https://sessionbuddy.com/" },
+      { name: "OneTab", url: "https://www.one-tab.com/" }
+    ],
+    seoTraffic: { rank: 32000, monthlyVisits: "0.3M", seoScore: 86 }
+  },
+  {
+    id: "extra-prod-whimsical",
+    name: "Whimsical 闪电设计画布",
+    description: "极为丝滑、响应速度极快的轻量级协作画布，主打一键高效生成思维导图、线框草图、流程图和黏贴便签。",
+    url: "https://whimsical.com/",
+    category: "productivity",
+    tags: ["极速流程图", "思维导图", "线框图草纸", "便签协作"],
+    icon: "Columns",
+    alternatives: [
+      { name: "Miro", url: "https://miro.com/" },
+      { name: "Draw.io", url: "https://draw.io/" }
+    ],
+    seoTraffic: { rank: 8200, monthlyVisits: "1.9M", seoScore: 92 }
+  },
+  {
+    id: "extra-prod-excalidraw-live",
+    name: "Excalidraw 实时连线手绘",
+    description: "经典开源极简手绘白板，支持多人跨地域零注册实时连线协作、流程草图一键绘制、支持完全本地化的离线文件保存。",
+    url: "https://excalidraw.com/",
+    category: "productivity",
+    tags: ["手绘风", "协作白板", "开源架构图", "零加密离线"],
+    icon: "PenTool",
+    alternatives: [
+      { name: "Miro", url: "https://miro.com/" },
+      { name: "内置Base64工具", url: "#builtin-base64" }
+    ],
+    seoTraffic: { rank: 7500, monthlyVisits: "2.5M", seoScore: 93 }
+  },
+  {
+    id: "extra-prod-ticktick",
+    name: "滴答清单 TickTick",
+    description: "国产全能日程规划与时间管家，完美集成多平台日历、精美番茄计时器、自律习惯打卡以及多级子任务管理列表。",
+    url: "https://dida365.com/",
+    category: "productivity",
+    tags: ["清单日历", "番茄工作法", "习惯打卡", "GTD自律", "全平台同步"],
+    icon: "CheckSquare",
+    alternatives: [
+      { name: "Todoist", url: "https://todoist.com/" },
+      { name: "Microsoft To Do", url: "https://todo.microsoft.com/" }
+    ],
+    seoTraffic: { rank: 2800, monthlyVisits: "5.1M", seoScore: 94 }
+  },
+
+  // Other Tools (10)
+  {
+    id: "extra-other-alternativeto",
+    name: "AlternativeTo 平替检索",
+    description: "极具威望的全球软件寻找平替网站，输入任何闭源收费大厂软件（如 Photoshop/Office），自动呈现由千万极客投票选出的最完美开源、免费替代选择。",
+    url: "https://alternativeto.net/",
+    category: "other",
+    tags: ["寻找平替", "开源搜索", "软件推荐", "极客百科"],
+    icon: "Compass",
+    alternatives: [
+      { name: "Slant.co", url: "https://slant.co/" },
+      { name: "Softpedia", url: "https://www.softpedia.com/" }
+    ],
+    seoTraffic: { rank: 1100, monthlyVisits: "14M", seoScore: 95 }
+  },
+  {
+    id: "extra-other-explainshell",
+    name: "ExplainShell 终端命令拆解",
+    description: "直观易用度极佳的 Linux Shell 复杂单行长指令（如 awk, rsync, tar）各部分参数与操作符号的语法图解、释义展示。",
+    url: "https://explainshell.com/",
+    category: "other",
+    tags: ["Linux命令", "参数拆解", "Shell速查", "可视化解释"],
+    icon: "CommandLine",
+    alternatives: [
+      { name: "DevHints", url: "https://devhints.io/" },
+      { name: "Linux命令在线手册", url: "https://wangchujiang.com/reference/" }
+    ],
+    seoTraffic: { rank: 45000, monthlyVisits: "0.2M", seoScore: 84 }
+  },
+  {
+    id: "extra-other-devhints",
+    name: "DevHints 极简单页速查",
+    description: "全球程序员最爱高频查阅的各类编程语言（JS, TS, Python）、数据库语法、Docker 与 Git 常见长指令的一页纸 cheatsheets 备忘大本营。",
+    url: "https://devhints.io/",
+    category: "other",
+    tags: ["速查备忘单", "cheatsheet", "一页纸文档", "命令行速查"],
+    icon: "Code",
+    alternatives: [
+      { name: "OverAPI", url: "https://overapi.com/" },
+      { name: "Quickref.me", url: "https://quickref.me/" }
+    ],
+    seoTraffic: { rank: 15000, monthlyVisits: "0.8M", seoScore: 89 }
+  },
+  {
+    id: "extra-other-producthunt-top",
+    name: "Product Hunt 每日新品榜",
+    description: "全球创新应用、初创软硬件及奇妙数码硬件的首发大本营，每日实时刷新由全球科技大咖打榜投票出的最酷创意排行。",
+    url: "https://www.producthunt.com/",
+    category: "other",
+    tags: ["每日新品", "初创黑客", "科技首发", "创投风向标"],
+    icon: "TrendingUp",
+    alternatives: [
+      { name: "Hacker News", url: "https://news.ycombinator.com/" },
+      { name: "BetaList", url: "https://betalist.com/" }
+    ],
+    seoTraffic: { rank: 950, monthlyVisits: "5.8M", seoScore: 95 }
+  },
+  {
+    id: "extra-other-hackernews-top",
+    name: "Hacker News 极客大本营",
+    description: "由顶尖创投 Y Combinator 托管、全球极客最为关注的硬核技术、极速科技突破新闻及拒绝营销噪音的高智商社区头条榜单。",
+    url: "https://news.ycombinator.com/",
+    category: "other",
+    tags: ["硬核新闻", "YC大本营", "极客社区", "深度讨论"],
+    icon: "Activity",
+    alternatives: [
+      { name: "Reddit Tech", url: "https://www.reddit.com/r/technology/" },
+      { name: "Slashdot", url: "https://slashdot.org/" }
+    ],
+    seoTraffic: { rank: 1200, monthlyVisits: "18M", seoScore: 96 }
+  },
+  {
+    id: "extra-other-github-trending-top",
+    name: "GitHub Trending 开源风向标",
+    description: "实时监控和展示今日、本周全球开发者关注度最高、高星霸榜、极速爆发的开源宝藏 repository 与热门项目趋势榜。",
+    url: "https://github.com/trending",
+    category: "other",
+    tags: ["GitHub热门", "高星霸榜", "爆火项目", "技术风向"],
+    icon: "GitBranch",
+    alternatives: [
+      { name: "Product Hunt", url: "https://www.producthunt.com/" },
+      { name: "Reddit Programming", url: "https://www.reddit.com/r/programming/" }
+    ],
+    seoTraffic: { rank: 40, monthlyVisits: "220M", seoScore: 98 }
+  },
+  {
+    id: "extra-other-ip138",
+    name: "IP138 精确归属地查询",
+    description: "国内最为经典和权威的公网 IP 物理归属地、网络运营商属性、域名 DNS 查询与站长高频网络排错综合诊断工具站。",
+    url: "https://www.ip138.com/",
+    category: "other",
+    tags: ["IP查询", "国内归属地", "网络诊断", "经典站长工具"],
+    icon: "Network",
+    alternatives: [
+      { name: "WhatIsMyIP", url: "https://www.whatismyip.com/" },
+      { name: "IP.cn", url: "https://ip.cn/" }
+    ],
+    seoTraffic: { rank: 2500, monthlyVisits: "12M", seoScore: 89 }
+  },
+  {
+    id: "extra-other-speedtest",
+    name: "Speedtest 宽带在线测速",
+    description: "Ookla 旗下的全球网络测速金牌标准，一键极速、精确诊断您当前连接线路的宽带上下行速度、数据抖动与延迟。",
+    url: "https://www.speedtest.net/",
+    category: "other",
+    tags: ["宽带测速", "延迟检测", "网络诊断", "Ookla"],
+    icon: "Activity",
+    alternatives: [
+      { name: "Fast.com (Netflix)", url: "https://fast.com/" },
+      { name: "测速网", url: "https://www.cesu.net/" }
+    ],
+    seoTraffic: { rank: 110, monthlyVisits: "150M", seoScore: 97 }
+  },
+  {
+    id: "extra-other-saasdb",
+    name: "SaaS 软件数据库 (SaaSDB)",
+    description: "搜集和深度对比国内外主流云端 SaaS 软件服务、收费标准、API 支持以及核心功能对比的综合型独立数据库平台。",
+    url: "https://www.saasdb.com/",
+    category: "other",
+    tags: ["SaaS百科", "软件比价", "功能评测", "创投名录"],
+    icon: "Columns",
+    alternatives: [
+      { name: "G2 Crowd", url: "https://www.g2.com/" },
+      { name: "Capterra", url: "https://www.capterra.com/" }
+    ],
+    seoTraffic: { rank: 68000, monthlyVisits: "0.1M", seoScore: 80 }
+  },
+  {
+    id: "extra-other-canva-video",
+    name: "Canva 在线视频模板",
+    description: "Canva 推出的在线零基础短视频和媒体片头动画拖拽编辑器，内置数万款自媒体、小红书和营销宣传片精美模版，一键高清下载。",
+    url: "https://www.canva.cn/video/",
+    category: "other",
+    tags: ["零基础剪辑", "短视频模板", "营销动效", "片头制作"],
+    icon: "Tv",
+    alternatives: [
+      { name: "剪映网页版", url: "https://www.capcut.cn/" },
+      { name: "FlexClip", url: "https://www.flexclip.com/" }
+    ],
+    seoTraffic: { rank: 220, monthlyVisits: "8.5M", seoScore: 94 }
   }
 ];
